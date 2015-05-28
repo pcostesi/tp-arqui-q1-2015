@@ -76,6 +76,11 @@ void * initializeKernelBinary()
 
 int main()
 {	
+	/* set up paging */
+	/* driver initialization */
+	/* set up IDTs & int80h */
+	/* timer/"proto-scheduler" initialization */
+	/* call shell (how do we call as userspace?) */
 	ncPrint("[Kernel Main]");
 	ncNewline();
 	ncPrint("  Sample code module at 0x");
@@ -91,6 +96,7 @@ int main()
 	ncNewline();
 	ncPrint("  Sample data module contents: ");
 	ncPrint((char*)sampleDataModuleAddress);
+	ncNewline();
 	ncNewline();
 
 	ncPrint("[Finished]");
