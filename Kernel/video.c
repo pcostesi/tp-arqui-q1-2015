@@ -4,7 +4,6 @@
 #define ROWS (VID_ROWS)
 
 #define VID_RAW_POS(row, col) ((char *) _vid_video + COLS * (row) + (col))
-#define CHR(c, fmt) ((uint16_t)((c) & 0xFF | (fmt) << 8))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define TAB_SIZE (8)
