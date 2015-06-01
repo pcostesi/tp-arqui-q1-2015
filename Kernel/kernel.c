@@ -4,6 +4,7 @@
 #include <moduleLoader.h>
 #include <naiveConsole.h>
 #include <video.h>
+#include <interrupts.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -16,6 +17,8 @@ static const uint64_t PageSize = 0x1000;
 
 static void * const sampleCodeModuleAddress = (void*)0x40000;
 static void * const sampleDataModuleAddress = (void*)0x50000;
+
+static struct IDT_Register idtr;
 
 typedef int (*EntryPoint)();
 
@@ -77,7 +80,6 @@ void * initializeKernelBinary()
 
 int main()
 {	
-	/* set up paging */
 	/* driver initialization */
 	/* set up IDTs & int80h */
 	/* timer/"proto-scheduler" initialization */
