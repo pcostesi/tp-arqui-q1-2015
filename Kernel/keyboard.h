@@ -155,167 +155,48 @@ enum KEYCODE {
 };
 
 
-
-uint8_t kybrd_ctrl_read_status () {
- 
-	return (unit8_t)*KYBRD_CTRL_STATS_REG;
-}
+#define KEY_BUFFER_SIZE = 64;
 
 
-//! send command byte to keyboard controller
-void kybrd_ctrl_send_cmd (uint8_t cmd) {
- 
-	//! wait for kkybrd controller input buffer to be clear
-	while (1)
-		if ( (kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_IN_BUF) == 0)
-			break;
- 
-	outportb (KYBRD_CTRL_CMD_REG, cmd);
+// returns status of lock keys
+extern bool		kbrd_get_scroll_lock ();
+extern bool		kbrd_get_numlock ();
+extern bool		kbrd_get_capslock ();
+
+// returns status of special keys
+extern bool		kbrd_get_alt ();
+extern bool		kbrd_get_ctrl ();
+extern bool		kbrd_get_shift ();
+
+// returns last scan code, last keystroke
+extern KEYCODE	kbrd_get_last_key ();
+
+// updates LEDs
+extern void		kbrd_set_leds (bool num, bool caps, bool scroll);
+
+// converts keycode to ascii character (takes account of caps lock and shift keys)
+extern char		kbrd_key_to_ascii (KEYCODE);
+
+// keyboard enable / disable
+extern void		kbrd_disable ();
+extern void		kbrd_enable ();
+extern bool		kbrd_is_disabled ();
+
+// reset system
+extern void		kbrd_reset_system ();
+
+// install keyboard
+extern void		kbrd_install (int);
 
 
+// buffer functions
+extern void key_buffer_init();
+extern void key_buffer_add();
+extern void void key_buffer_reset();
 
-	//! send command byte to keyboard controller
-void kybrd_ctrl_send_cmd (uint8_t cmd) {
- 
-	//! wait for kkybrd controller input buffer to be clear
-	while (1)
-		if ( (kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_IN_BUF) == 0)
-			break;
- 
-	outportb (KYBRD_CTRL_CMD_REG, cmd);
-}
-
-
-
-//! read keyboard encoder buffer
-uint8_t kybrd_enc_read_buf () {
- 
-	return inportb (KYBRD_ENC_INPUT_BUF);
-}
- 
-//! send command byte to keyboard encoder
-void kybrd_enc_send_cmd (uint8_t cmd) {
- 
-	//! wait for kkybrd controller input buffer to be clear
-	while ((kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_IN_BUF) != 0){
-
-	}
-
-	//! send command byte to kybrd encoder
-	outportb (KYBRD_ENC_CMD_REG, cmd);
-}
-
-
-
-
-
-//! sets leds
-void kkybrd_set_leds (bool num, bool caps, bool scroll) {
- 
-	uint8_t data = 0;
- 
-	//! set or clear the bit
-	data = (scroll) ? (data | 1) : (data & 1);
-	data = (num) ? (num | 2) : (num & 2);
-	data = (caps) ? (num | 4) : (num & 4);
- 
-	//! send the command -- update keyboard Light Emetting Diods (LEDs)
-	kybrd_enc_send_cmd (KYBRD_ENC_CMD_SET_LED);
-	kybrd_enc_send_cmd (data);
-
-
-//! run self test
-bool kkybrd_self_test () {
- 
-	//! send command
-	kybrd_ctrl_send_cmd (KYBRD_CTRL_CMD_SELF_TEST);
- 
-	//! wait for output buffer to be full
-	while (1)
-		if (kybrd_ctrl_read_status () & KYBRD_CTRL_STATS_MASK_OUT_BUF)
-			break;
- 
-	//! if output buffer == 0x55, test passed
-	return (kybrd_enc_read_buf () == 0x55) ? true : false;
-}
-
-
-//Command 0xAB - Interface Test
-
-
-//! disables the keyboard
-void kkybrd_disable () {
- 
-	kybrd_ctrl_send_cmd (KYBRD_CTRL_CMD_DISABLE);
-	_kkybrd_disable = true;
-}
-
-
-//! enables the keyboard
-void kkybrd_enable () {
- 
-	kybrd_ctrl_send_cmd (KYBRD_CTRL_CMD_ENABLE);
-	_kkybrd_disable = false;
-}
-
-
-//! reset the system
-void kkybrd_reset_system () {
- 
-	//! writes 11111110 to the output port (sets reset system line low)
-	kybrd_ctrl_send_cmd (KYBRD_CTRL_CMD_WRITE_OUT_PORT);
-	kybrd_enc_send_cmd (0xfe);
-}
-
-
-
-//! prepares driver for use
-void kkybrd_install (int irq) {
- 
-	//! Install our interrupt handler (irq 1 uses interrupt 33)
-	setvect (irq, i86_kybrd_irq);
- 
-	//! assume Basic Assurance test (BAT) test is good
-	_kkybrd_bat_res = true;
-	_scancode = 0;
- 
-	//! set lock keys and led lights
-	_numlock = _scrolllock = _capslock = false;
-	kkybrd_set_leds (false, false, false);
- 
-	//! shift, ctrl, and alt keys
-	_shift = _alt = _ctrl = false;
-}
-
-/*****************************************************************************
-*****************************************************************************/
-void outportb(unsigned port, unsigned val)
-{
- 
-__asm__ __volatile__("outb %b0,%w1"
-:
-: "a"(val), "d"(port));
- 
-}
-
-
-/*****************************************************************************
-*****************************************************************************/
-unsigned inportb(unsigned short port)
-{
- 
-unsigned char ret_val;
- 
-__asm__ __volatile__("inb %1,%0"
-: "=a"(ret_val)
-: "d"(port));
-return ret_val;
- 
-}
-
-
-
-
+// Get from buffer functions
+extern KEYCODE kbrd_get_key ();
+extern KEYCODE kbrd_get_previous_key();
 
 
 
