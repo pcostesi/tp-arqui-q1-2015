@@ -59,7 +59,7 @@ void vid_putc(const char c)
 	vid_raw_putc(c, _vid_fmt);
 }
 
-void __vid_cursor(const unsigned int row, const unsigned int col)
+void _vid_set_cursor(const unsigned int row, const unsigned int col)
 {
 	int sane_row = MIN(ROWS - 1, row);
 	int sane_col = MIN(COLS, col);
@@ -72,7 +72,7 @@ void vid_raw_putc(const char c, const enum VID_COLOR fmt)
 
 	if (_vid_cursor >= VID_RAW_POS(ROWS, 0)) {
 		vid_scroll();
-		__vid_cursor(ROWS - 1, 0);
+		_vid_set_cursor(ROWS - 1, 0);
 	}
 
 	offset = _vid_cursor - _vid_video;
@@ -85,15 +85,15 @@ void vid_raw_putc(const char c, const enum VID_COLOR fmt)
 			*_vid_cursor++ = ' ';
 			*_vid_cursor++ = fmt;
 		}
-		vid__vid_cursor(row + 1, 0);
+		_vid_set_cursor(row + 1, 0);
 		break;
 	
 		case '\r':
-		vid__vid_cursor(row, 0);
+		_vid_set_cursor(row, 0);
 		break;
 
 		case '\b':
-		vid__vid_cursor(row, MAX(col - 1, 0));
+		_vid_set_cursor(row, MAX(col - 1, 0));
 		break;
 
 		case '\t':
