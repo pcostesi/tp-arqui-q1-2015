@@ -59,7 +59,7 @@ void vid_putc(const char c)
 	vid_raw_putc(c, _vid_fmt);
 }
 
-void vid__vid_cursor(const unsigned int row, const unsigned int col)
+void __vid_cursor(const unsigned int row, const unsigned int col)
 {
 	int sane_row = MIN(ROWS - 1, row);
 	int sane_col = MIN(COLS, col);
@@ -72,7 +72,7 @@ void vid_raw_putc(const char c, const enum VID_COLOR fmt)
 
 	if (_vid_cursor >= VID_RAW_POS(ROWS, 0)) {
 		vid_scroll();
-		vid__vid_cursor(ROWS - 1, 0);
+		__vid_cursor(ROWS - 1, 0);
 	}
 
 	offset = _vid_cursor - _vid_video;
