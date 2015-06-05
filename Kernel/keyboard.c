@@ -1,3 +1,16 @@
+#include <keyboard.h>
+#include <stdint.h>
+
+#define false  0
+#define true   1
+
+enum KYBRD_ENCODER_IO {
+
+	KYBRD_ENC_INPUT_BUF	=	0x60,
+	KYBRD_ENC_CMD_REG	=	0x60
+};
+
+
 enum KBRD_CTRL_STATS_MASK 
 {
 	KBRD_CTRL_STATS_MASK_OUT_BUF	=	1,			//00000001
@@ -66,10 +79,6 @@ enum KBRD_CTRL_CMDS
 	KBRD_CTRL_CMD_MOUSE_WRITE		=	0xD4
 };
 
-	// send command
-	kbrd_ctrl_send_cmd (KBRD_CTRL_CMD_SELF_TEST);
-
-	// wait for output buffer to be full
 // scan error codes ------------------------------------------
 
 enum KBRD_ERROR 
@@ -88,7 +97,7 @@ enum KBRD_ERROR
 
 //! original xt scan code set. Array index==make code
 //! change what keys the scan code corrospond to if your scan code set is different
-static int _kkybrd_scancode_std [] = {
+static int kbrdscancode_std [] = {
 
 	//! key			scancode
 	KEY_UNKNOWN,	//0
@@ -177,43 +186,23 @@ static int _kkybrd_scancode_std [] = {
 };
 
 
-static struct _locks 
-{
-	bool num, scroll, caps;
-};
+uint8_t num_lock, scroll_lock, caps_lock;
 
-static struct _hold 
-{
-	bool shift, alt, ctrl;
-};
+
+uint8_t shift_hold;
+uint8_t alt_hold; 
+uint8_t ctrl_hold;
 
 //Key Buffer variables	
-static KEYCODE key_buffer[KEY_BUFFER_SIZE];
+static enum KEYCODE key_buffer[KEY_BUFFER_SIZE];
 static int buffer_current_key;
 static int buffer_last_key;
 
-
-static char _scancode;
-
-// set if keyboard error
-static int _kbrd_error = 0;
-
-// set if the Basic Assurance Test (BAT) failed
-static bool _kbrd_bat_res = false;
-
-// set if diagnostics failed
-static bool _kbrd_diag_res = false;
-
-// set if system should resend last command
-static bool _kbrd_resend_res = false;
-
-// set if keyboard is disabled
-static bool _kbrd_disable = false;
-
-
+int kbrd_disable;
+static char scancode;
 
 // sets leds
-void kbrd_set_leds (bool num, bool caps, bool scroll) 
+void kbrd_set_leds (uint8_t num, uint8_t caps, uint8_t scroll) 
 {
 	uint8_t data = 0;
 
@@ -223,12 +212,12 @@ void kbrd_set_leds (bool num, bool caps, bool scroll)
 	data = (caps) ? (data | 4) : (data & 3);
 
 	// send the command -- update keyboard LEDs
-	kbrd_enc_send_cmd (KBRD_ENC_CMD_SET_LED);
+	kbrd_enc_send_cmd ((uint8_t)KBRD_ENC_CMD_SET_LED);
 	kbrd_enc_send_cmd (data);
 }
 
 // convert key to an ascii character
-char kbrd_key_to_ascii (KEYCODE code)
+char kbrd_key_to_ascii (enum KEYCODE code)
  {
 	uint8_t key = code;
 
@@ -236,13 +225,20 @@ char kbrd_key_to_ascii (KEYCODE code)
 	if (isascii (key)) {
 
 		// if shift key is down or caps lock is on, make the key uppercase
-		if (hold.shift ^^ lock.caps)
+		if (shift_hold ^ caps_lock)
+		{
 			if (key >= 'a' && key <= 'z')
+			{
 				key -= 32;
+			}
+		}
 
-		if (hold.shift && !lock.caps)
+		if (shift_hold && !caps_lock)
+		{
 			if (key >= '0' && key <= '9')
-				switch (key) {
+			{
+				switch (key) 
+				{
 
 					case '0':
 						key = KEY_RIGHTPARENTHESIS;
@@ -275,7 +271,9 @@ char kbrd_key_to_ascii (KEYCODE code)
 						key = KEY_LEFTPARENTHESIS;
 						break;
 				}
-			else {
+			}
+			else 
+			{
 
 				switch (key) {
 					case KEY_COMMA:
@@ -323,6 +321,7 @@ char kbrd_key_to_ascii (KEYCODE code)
 						break;
 				}
 			}
+		}
 		return key;
 	}
 	// scan code is not a valid ascii char so no convertion is possible
@@ -341,23 +340,23 @@ int isascii(int c)
 
 
 // disables the keyboard
-void kbrd_disable () 
+void kbrd_disable_cmd () 
 {
-	kbrd_ctrl_send_cmd (kbrd_CTRL_CMD_DISABLE);
-	_kbrd_disable = true;
+	kbrd_ctrl_send_cmd ((uint8_t)KBRD_CTRL_CMD_DISABLE);
+	kbrd_disable = true;
 }
 
 // enables the keyboard
 void kbrd_enable () 
 {
-	kbrd_ctrl_send_cmd (kbrd_CTRL_CMD_ENABLE);
-	_kbrd_disable = false;
+	kbrd_ctrl_send_cmd (KBRD_CTRL_CMD_ENABLE);
+	kbrd_disable = false;
 }
 
 // returns true if keyboard is disabled
-bool kbrd_is_disabled () 
+uint8_t kbrd_is_disabled () 
 {
-	return _kbrd_disable;
+	return kbrd_disable;
 }
 
 // reset the system
@@ -367,26 +366,6 @@ void kbrd_reset_system ()
 	kbrd_ctrl_send_cmd (KBRD_CTRL_CMD_WRITE_OUT_PORT);
 	kbrd_enc_send_cmd (0xfe);
 }
-
-// prepares driver for use
-void kbrd_install (int irq) 
-{
-	// Install our interrupt handler (irq 1 uses interrupt 33)
-	setvect (irq, i86_kbrd_irq);
-
-	// assume BAT test is good. If there is a problem, the IRQ handler where catch the error
-	_kbrd_bat_res = true;
-	_scancode = 0;
-
-	// set lock keys and led lights
-	lock.num = lock.scroll = lock.caps = false;
-	kkbrd_set_leds (false, false, false);
-	key_buffer_init();
-
-	// shift, ctrl, and alt keys
-	hold.shift = hold.alt = hold.ctrl = false;
-}
-
 
 //Key buffer functions
 void key_buffer_init()
@@ -398,7 +377,7 @@ void key_buffer_init()
 	}
 }
 
-void key_buffer_add(KEYCODE key)
+void key_buffer_add(enum KEYCODE key)
 {
 	if( !( (buffer_last_key+1) % KEY_BUFFER_SIZE == buffer_current_key) )
 	{
@@ -414,7 +393,7 @@ void key_buffer_reset()
 
 
 //Returns last element of the key buffer
-KEYCODE kbrd_get_key () 
+enum KEYCODE kbrd_get_key () 
 {
 	if (buffer_last_key == buffer_current_key )
 	{
@@ -423,46 +402,46 @@ KEYCODE kbrd_get_key ()
 	return key_buffer[++buffer_current_key];
 }
 
-KEYCODE kbrd_get_previous_key()
+enum KEYCODE kbrd_get_previous_key()
 {
 	return key_buffer[(buffer_current_key - 1) >= 0 ? (buffer_current_key-1) : KEY_BUFFER_SIZE -1 ];
 }
 
 
 // returns scroll lock state
-bool	kbrd_get_scroll_lock () 
+uint8_t	kbrd_get_scroll_lock () 
 {
-	return lock.scroll;
+	return scroll_lock;
 }
 
 // returns num lock state
-bool	kbrd_get_numlock () 
+uint8_t	kbrd_get_numlock () 
 {
-	return lock.num;
+	return num_lock;
 }
 
 // returns caps lock state
-bool	kbrd_get_capslock ()	
+uint8_t	kbrd_get_capslock ()	
 {
-	return lock.caps;
+	return caps_lock;
 }
 
 // returns status of control key
-bool	kbrd_get_ctrl ()	
+uint8_t	kbrd_get_ctrl ()	
 {
-	return hold.ctrl;
+	return ctrl_hold;
 }
 
 // returns status of alt key
-bool	kbrd_get_alt () 
+uint8_t	kbrd_get_alt () 
 {
-	return hold.alt;
+	return alt_hold;
 }
 
 // returns status of shift key
-bool	kbrd_get_shift ()	
+uint8_t	kbrd_get_shift ()	
 {
-	return hold.shift;
+	return shift_hold;
 }
 
 
@@ -470,14 +449,14 @@ bool	kbrd_get_shift ()
 // return last scan code
 uint8_t kbrd_get_last_scan ()	
 {
-	return _scancode;
+	return scancode;
 }
 
 
 // read status from keyboard controller
-uint8_t kbrd_ctrl_read_status () 
+unsigned kbrd_ctrl_read_status () 
 {
-	return inportb (kbrd_CTRL_STATS_REG);
+	return inportb ( (unsigned short) KBRD_CTRL_STATS_REG);
 }
 
 // send command byte to keyboard controller
@@ -485,16 +464,16 @@ void kbrd_ctrl_send_cmd (uint8_t cmd)
 {
 	// wait for kbrd controller input buffer to be clear
 	while (1)
-		if ( (kbrd_ctrl_read_status () & kbrd_CTRL_STATS_MASK_IN_BUF) == 0)
+		if ( (kbrd_ctrl_read_status () & KBRD_CTRL_STATS_MASK_IN_BUF) == 0)
 			break;
 
-	outportb (kbrd_CTRL_CMD_REG, cmd);
+	outportb ((unsigned)KBRD_CTRL_CMD_REG,(unsigned) cmd);
 }
 
 // read keyboard encoder buffer
-uint8_t kbrd_enc_read_buf () 
+unsigned short kbrd_enc_read_buf () 
 {
-	return inportb (kbrd_ENC_INPUT_BUF);
+	return inportb ((unsigned)KBRD_ENC_INPUT_BUF);
 }
 
 // send command byte to keyboard encoder
@@ -502,22 +481,22 @@ void kbrd_enc_send_cmd (uint8_t cmd)
 {
 	// wait for kbrd controller input buffer to be clear
 	while (1)
-		if ( (kbrd_ctrl_read_status () & kbrd_CTRL_STATS_MASK_IN_BUF) == 0)
+		if ( (kbrd_ctrl_read_status () & KBRD_CTRL_STATS_MASK_IN_BUF) == 0)
 			break;
 
 	// send command byte to kbrd encoder
-	outportb (kbrd_ENC_CMD_REG, cmd);
+	outportb ((unsigned)KBRD_ENC_CMD_REG, (unsigned)cmd);
 }
 
 //	keyboard interrupt handler
-void i86_kbrd_irq () 
+void ikbrd_irq () 
 {
-	static bool _extended = false;
+	static uint8_t _extended = false;
 
 	int code = 0;
 
 	// read scan code only if the kbrd controller output buffer is full (scan code is in it)
-	if (kbrd_ctrl_read_status () & kbrd_CTRL_STATS_MASK_OUT_BUF) {
+	if (kbrd_ctrl_read_status () & KBRD_CTRL_STATS_MASK_OUT_BUF) {
 
 		// read the scan code
 		code = kbrd_enc_read_buf ();
@@ -538,86 +517,96 @@ void i86_kbrd_irq ()
 				code -= 0x80;
 
 				// grab the key
-				int key = _kbrd_scancode_std [code];
+				int key = kbrdscancode_std [code];
 
 				// test if a special key has been released & set it
 				switch (key) {
 
 					case KEY_LCTRL:
 					case KEY_RCTRL:
-						hold.ctrl = false;
+						ctrl_hold = false;
 						break;
 
 					case KEY_LSHIFT:
 					case KEY_RSHIFT:
-						hold.shift = false;
+						shift_hold = false;
 						break;
 
 					case KEY_LALT:
 					case KEY_RALT:
-						hold.alt = false;
+						alt_hold = false;
 						break;
 				}
 			}
 			else {
 
 				// this is a make code - set the scan code
-				_scancode = code;
+				scancode = code;
 
 				// grab the key
-				int key = _kbrd_scancode_std [code];
+				int key = kbrdscancode_std [code];
 
 				// test if user is holding down any special keys & set it
 				switch (key) {
 
 					case KEY_LCTRL:
 					case KEY_RCTRL:
-						hold.ctrl = true;
+						ctrl_hold = true;
 						break;
 
 					case KEY_LSHIFT:
 					case KEY_RSHIFT:
-						hold.shift = true;
+						shift_hold = true;
 						break;
 
 					case KEY_LALT:
 					case KEY_RALT:
-						hold.alt = true;
+						alt_hold = true;
 						break;
 
 					case KEY_CAPSLOCK:
-						lock.caps = (lock.caps) ? false : true;
-						kbrd_set_leds (lock.num, lock.caps, lock.scroll);
+						caps_lock = (caps_lock == true) ? false : true;
+						kbrd_set_leds (num_lock, caps_lock, scroll_lock);
 						break;
 
 					case KEY_KP_NUMLOCK:
-						lock.num = (lock.num) ? false : true;
-						kbrd_set_leds (lock.num, lock.caps, lock.scroll);
+						num_lock = (num_lock == true) ? false : true;
+						kbrd_set_leds (num_lock, caps_lock, scroll_lock);
 						break;
 
 					case KEY_SCROLLLOCK:
-						lock.scroll = (lock.scroll) ? false : true;
-						kbrd_set_leds (lock.num, lock.caps, lock.scroll);
+						scroll_lock = ((scroll_lock) ? false : true);
+						kbrd_set_leds (num_lock, caps_lock, scroll_lock);
 						break;
-					default key_buffer_add(key);
+				//	default : key_buffer_add(key);
 				}
 			}
 		}
-
-		// watch for errors
-		switch (code) {
-
-			case KBRD_ERR_BAT_FAILED:
-				_kbrd_bat_res = false;
-				break;
-
-			case KBRD_ERR_DIAG_FAILED:
-				_kbrd_diag_res = false;
-				break;
-
-			case KBRD_ERR_RESEND_CMD:
-				_kbrd_resend_res = true;
-				break;
-		}
 	}
+}
+
+/*****************************************************************************
+*****************************************************************************/
+void outportb(unsigned port, unsigned val)
+{
+ 
+__asm__ __volatile__("outb %b0,%w1"
+:
+: "a"(val), "d"(port));
+ 
+}
+
+
+/*****************************************************************************
+*****************************************************************************/
+unsigned inportb(unsigned short port)
+{
+ 
+unsigned char ret_val;
+ 
+__asm__ __volatile__("inb %1,%0"
+: "=a"(ret_val)
+: "d"(port));
+return ret_val;
+ 
 }

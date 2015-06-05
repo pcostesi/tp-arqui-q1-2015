@@ -1,4 +1,8 @@
+//#define false  0
+//#define true  1
+#include <stdint.h>
 
+#define KEY_BUFFER_SIZE  64
 
 enum KEYCODE {
 
@@ -155,32 +159,30 @@ enum KEYCODE {
 };
 
 
-#define KEY_BUFFER_SIZE = 64;
-
 
 // returns status of lock keys
-bool kbrd_get_scroll_lock ();
-bool kbrd_get_numlock ();
-bool kbrd_get_capslock ();
+uint8_t kbrd_get_scroll_lock ();
+uint8_t kbrd_get_numlock ();
+uint8_t kbrd_get_capslock ();
 
 // returns status of special keys
-bool kbrd_get_alt ();
-bool kbrd_get_ctrl ();
-bool kbrd_get_shift ();
+uint8_t kbrd_get_alt ();
+uint8_t kbrd_get_ctrl ();
+uint8_t kbrd_get_shift ();
 
 // returns last scan code, last keystroke
-KEYCODE	kbrd_get_last_key ();
+enum KEYCODE	kbrd_get_last_key ();
 
 // updates LEDs
-void kbrd_set_leds (bool num, bool caps, bool scroll);
+void kbrd_set_leds (uint8_t num, uint8_t caps, uint8_t scroll);
 
 // converts keycode to ascii character (takes account of caps lock and shift keys)
-char kbrd_key_to_ascii (KEYCODE);
+char kbrd_key_to_ascii (enum KEYCODE);
 
 // keyboard enable / disable
-void kbrd_disable ();
+void kbrd_disable_cmd ();
 void kbrd_enable ();
-bool kbrd_is_disabled ();
+uint8_t kbrd_is_disabled ();
 
 // reset system
 void kbrd_reset_system ();
@@ -188,19 +190,21 @@ void kbrd_reset_system ();
 // install keyboard
 void kbrd_install (int);
 
-
 // buffer functions
 void key_buffer_init();
 void key_buffer_add();
-void void key_buffer_reset();
+void key_buffer_reset();
 
 // Get from buffer functions
-KEYCODE kbrd_get_key ();
-KEYCODE kbrd_get_previous_key();
+enum KEYCODE kbrd_get_key ();
+enum KEYCODE kbrd_get_previous_key();
 
+unsigned kbrd_ctrl_read_status();
 
+void outportb(unsigned port, unsigned val);
+unsigned inportb(unsigned short port);
 
+void kbrd_ctrl_send_cmd (uint8_t cmd);
+void kbrd_enc_send_cmd (uint8_t cmd);  
 
-
-
-
+int isascii(int c);
