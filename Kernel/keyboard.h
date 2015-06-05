@@ -159,44 +159,44 @@ enum KEYCODE {
 
 
 // returns status of lock keys
-extern bool		kbrd_get_scroll_lock ();
-extern bool		kbrd_get_numlock ();
-extern bool		kbrd_get_capslock ();
+bool kbrd_get_scroll_lock ();
+bool kbrd_get_numlock ();
+bool kbrd_get_capslock ();
 
 // returns status of special keys
-extern bool		kbrd_get_alt ();
-extern bool		kbrd_get_ctrl ();
-extern bool		kbrd_get_shift ();
+bool kbrd_get_alt ();
+bool kbrd_get_ctrl ();
+bool kbrd_get_shift ();
 
 // returns last scan code, last keystroke
-extern KEYCODE	kbrd_get_last_key ();
+KEYCODE	kbrd_get_last_key ();
 
 // updates LEDs
-extern void		kbrd_set_leds (bool num, bool caps, bool scroll);
+void kbrd_set_leds (bool num, bool caps, bool scroll);
 
 // converts keycode to ascii character (takes account of caps lock and shift keys)
-extern char		kbrd_key_to_ascii (KEYCODE);
+char kbrd_key_to_ascii (KEYCODE);
 
 // keyboard enable / disable
-extern void		kbrd_disable ();
-extern void		kbrd_enable ();
-extern bool		kbrd_is_disabled ();
+void kbrd_disable ();
+void kbrd_enable ();
+bool kbrd_is_disabled ();
 
 // reset system
-extern void		kbrd_reset_system ();
+void kbrd_reset_system ();
 
 // install keyboard
-extern void		kbrd_install (int);
+void kbrd_install (int);
 
 
 // buffer functions
-extern void key_buffer_init();
-extern void key_buffer_add();
-extern void void key_buffer_reset();
+void key_buffer_init();
+void key_buffer_add();
+void void key_buffer_reset();
 
 // Get from buffer functions
-extern KEYCODE kbrd_get_key ();
-extern KEYCODE kbrd_get_previous_key();
+KEYCODE kbrd_get_key ();
+KEYCODE kbrd_get_previous_key();
 
 
 
