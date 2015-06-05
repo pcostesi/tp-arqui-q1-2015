@@ -61,16 +61,24 @@ void vid_putc(const char c)
 
 void _vid_set_cursor(const unsigned int row, const unsigned int col)
 {
-	int sane_row = MIN(ROWS - 1, row);
-	int sane_col = MIN(COLS, col);
-	_vid_cursor = VID_RAW_POS(sane_row, sane_col);
+	char * raw = VID_RAW_POS(row, col);
+	char * _VID_MAX_POS = VID_RAW_POS(ROWS - 1, COLS);
+	char * _VID_MIN_POS = VID_RAW_POS(0, 0);
+
+	if (raw > _VID_MAX_POS) {
+		 _vid_cursor = _VID_MAX_POS;
+	} else if (raw < _VID_MIN_POS) {
+		_vid_cursor = _VID_MIN_POS;
+	} else {
+		_vid_cursor = raw;
+	}
 }
 
 void vid_raw_putc(const char c, const enum VID_COLOR fmt)
 {
 	int offset, row, col;
 
-	if (_vid_cursor >= VID_RAW_POS(ROWS, 0)) {
+	if (_vid_cursor >= VID_RAW_POS(ROWS - 1, COLS)) {
 		vid_scroll();
 		_vid_set_cursor(ROWS - 1, 0);
 	}
