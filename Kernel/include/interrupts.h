@@ -26,7 +26,7 @@ typedef void (* IDT_Handler)(int irq);
  * and break the expectations in forward declaration of structures.
  */
 void install_IDTR(void);
-void install_IDT_handler(IDT_Handler * handler, uint16_t interrupt);
+void install_IDT_handler(IDT_Handler handler, uint16_t interrupt);
 void syscall(void);
 
 #endif
