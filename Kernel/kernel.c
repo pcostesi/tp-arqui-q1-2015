@@ -116,11 +116,11 @@ int main()
 
 	install_IDTR();
 	install_IDT_handler((IDT_Handler) &int80h, 0x80);
-	install_IDT_handler((IDT_Handler) &int80h, 0x21);
+	install_IDT_handler((IDT_Handler) &kbrd_irq, 0x21);
 	install_IDT_handler((IDT_Handler) &int80h, 0x20);
 
-	/*kbrd_install ();
-	ncPrint("[Keyboard installed]");*/
+	kbrd_install ();
+	ncPrint("[Keyboard installed]");
 
 	ncNewline();
 	ncPrint("Done.");

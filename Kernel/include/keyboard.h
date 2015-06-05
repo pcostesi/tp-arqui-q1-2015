@@ -208,3 +208,5 @@ void kbrd_ctrl_send_cmd (uint8_t cmd);
 void kbrd_enc_send_cmd (uint8_t cmd);  
 
 int isascii(int c);
+
+void kbrd_irq ();

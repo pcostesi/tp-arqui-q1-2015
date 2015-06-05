@@ -489,7 +489,7 @@ void kbrd_enc_send_cmd (uint8_t cmd)
 }
 
 //	keyboard interrupt handler
-void ikbrd_irq () 
+void kbrd_irq () 
 {
 	static uint8_t _extended = false;
 
