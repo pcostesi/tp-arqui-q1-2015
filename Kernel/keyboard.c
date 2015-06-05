@@ -1,5 +1,6 @@
 #include <keyboard.h>
 #include <stdint.h>
+#include <video.h>
 
 #define false  0
 #define true   1
@@ -518,7 +519,6 @@ void kbrd_irq ()
 
 				// grab the key
 				int key = kbrdscancode_std [code];
-
 				// test if a special key has been released & set it
 				switch (key) {
 
@@ -624,3 +624,4 @@ void kbrd_install ()
 	// shift, ctrl, and alt keys
 	shift_hold = alt_hold = ctrl_hold = false;
 }
+
