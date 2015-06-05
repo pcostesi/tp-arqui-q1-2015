@@ -79,11 +79,11 @@ void * initializeKernelBinary()
 IDT_Handler int80h(int irq)
 {
 	char str[] = {'0', '0', 0};
-	char guard = 0;
 	str[0] += irq / 10;
 	str[1] += irq % 10;
 	vid_println(str);
-	vid_println("");
+	vid_putc('\n');
+	return;
 }
 
 int main()
@@ -115,9 +115,9 @@ int main()
 
 
 	install_IDTR();
-	install_IDT_handler((IDT_Handler *) &int80h, 0x80);
-	install_IDT_handler((IDT_Handler *) &int80h, 0x21);
-	install_IDT_handler((IDT_Handler *) &int80h, 0x20);
+	install_IDT_handler((IDT_Handler) &int80h, 0x80);
+	install_IDT_handler((IDT_Handler) &int80h, 0x21);
+	install_IDT_handler((IDT_Handler) &int80h, 0x20);
 
 	ncNewline();
 	ncPrint("Done.");
