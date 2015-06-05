@@ -610,3 +610,17 @@ __asm__ __volatile__("inb %1,%0"
 return ret_val;
  
 }
+
+// prepares driver for use
+void kbrd_install () 
+{
+	scancode = 0;
+
+	// set lock keys and led lights
+	num_lock = scroll_lock = caps_lock = false;
+	kbrd_set_leds (false, false, false);
+	key_buffer_init();
+
+	// shift, ctrl, and alt keys
+	shift_hold = alt_hold = ctrl_hold = false;
+}

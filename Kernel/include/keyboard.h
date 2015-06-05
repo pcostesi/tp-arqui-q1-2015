@@ -188,7 +188,7 @@ uint8_t kbrd_is_disabled ();
 void kbrd_reset_system ();
 
 // install keyboard
-void kbrd_install (int);
+void kbrd_install ();
 
 // buffer functions
 void key_buffer_init();

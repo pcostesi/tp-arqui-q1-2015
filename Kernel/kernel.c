@@ -5,6 +5,7 @@
 #include <naiveConsole.h>
 #include <video.h>
 #include <interrupts.h>
+#include <keyboard.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -113,11 +114,13 @@ int main()
 
 	ncPrint("[Finished]");
 
-
 	install_IDTR();
 	install_IDT_handler((IDT_Handler) &int80h, 0x80);
 	install_IDT_handler((IDT_Handler) &int80h, 0x21);
 	install_IDT_handler((IDT_Handler) &int80h, 0x20);
+
+	/*kbrd_install ();
+	ncPrint("[Keyboard installed]");*/
 
 	ncNewline();
 	ncPrint("Done.");
