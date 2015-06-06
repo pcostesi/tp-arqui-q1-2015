@@ -43,7 +43,7 @@ void vid_raw_print(const char * str, unsigned int n)
 
 	/* if we're asked to print something length 2n + 1, print 'till 2n */
 	for (idx = 0; idx < n / 2; idx++) {
-		vid_raw_putc(str[2 * idx], str[2 * idx + 1];
+		vid_raw_putc(str[2 * idx], str[2 * idx + 1]);
 	}
 }
 
