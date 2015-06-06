@@ -7,6 +7,7 @@
 #include <interrupts.h>
 #include <keyboard.h>
 #include <rtc-driver.h>
+#include <syscalls.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -78,20 +79,6 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-IntSysHandler int80h(int sysno, int RDI, int RSI, int RDX, int RCX, int R8, int R9)
-{
-	switch (sysno) {
-		case 42:
-		while (1) {
-			vid_print("42 ");
-		}
-
-		default:
-		return 0;
-	}
-	return 0;
-}
-
 int main()
 {	
 	/* driver initialization */
@@ -127,8 +114,6 @@ int main()
 
 	ncNewline();
 	ncPrint("Done.");
-
-	sys_42();
 
 	while (1);
 	return 0;
