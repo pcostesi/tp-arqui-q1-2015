@@ -32,7 +32,7 @@ void syscall_write(unsigned int fd, char *str, unsigned int size)
 		vid_color(RED, BLACK);
 		break;
 		
-		case 2:
+		case 3:
 		vid_raw_print(str, size);
 		return;
 
