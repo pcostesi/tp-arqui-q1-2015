@@ -4,6 +4,8 @@
 #include <moduleLoader.h>
 #include <naiveConsole.h>
 #include <video.h>
+#include <interrupts.h>
+#include <keyboard.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -75,14 +77,24 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
+IDT_Handler int80h(int irq)
+{
+	char str[] = {'0', '0', 0};
+	str[0] += irq / 10;
+	str[1] += irq % 10;
+	/*vid_println(str);
+	vid_putc('\n');*/
+	return;
+}
+
 int main()
 {	
-	/* set up paging */
 	/* driver initialization */
 	/* set up IDTs & int80h */
 	/* timer/"proto-scheduler" initialization */
 	/* call shell (how do we call as userspace?) */
-	ncPrint("[Kernel Main]");
+
+	/*ncPrint("[Kernel Main]");
 	ncNewline();
 	ncPrint("  Sample code module at 0x");
 	ncPrintHex((uint64_t)sampleCodeModuleAddress);
@@ -99,7 +111,20 @@ int main()
 	ncPrint((char*)sampleDataModuleAddress);
 	ncNewline();
 	ncNewline();
-
+*/
 	ncPrint("[Finished]");
+
+	install_IDTR();
+	install_IDT_handler((IDT_Handler) &int80h, 0x80);
+	install_IDT_handler((IDT_Handler) &kbrd_irq, 0x21);
+	install_IDT_handler((IDT_Handler) &int80h, 0x20);
+	
+	kbrd_install();
+
+	ncNewline();
+	ncPrint("Done.");
+
+//	vid_clr();
+	while (1);
 	return 0;
 }
