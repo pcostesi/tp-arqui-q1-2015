@@ -10,19 +10,25 @@ static char video_dormant = 0;
 
 void syscall_pause(void)
 {
+	if (video_dormant) return;
+
 	vid_flip_buffer();
 	video_dormant = 1;
 }
 
 void syscall_wake(void)
 {
+	if (!video_dormant) return;
+	
 	vid_flip_buffer();
 	video_dormant = 0;
 }
 
 void syscall_write(unsigned int fd, char *str, unsigned int size)
 {
-	if (video_dormant) return;
+	if (video_dormant) {
+		syscall_wake();
+	};
 
 	switch (fd) {
 		case 1:

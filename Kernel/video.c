@@ -13,7 +13,7 @@ static volatile char * _vid_video = (char *) 0xB8000;
 static volatile char * _vid_cursor = (char *) 0xB8000;
 static char _vid_fmt = (char) 0x07;
 static char vid_buffer[VID_BUF_SIZE];
-static char * vid_buffer_cursor = (char *) vid_buffer;
+static char * vid_buffer_cursor = (char *) 0xB8000;
 
 inline static void vid_scroll();
 inline static void _vid_copy_row(const int row_src, const int row_dst);
