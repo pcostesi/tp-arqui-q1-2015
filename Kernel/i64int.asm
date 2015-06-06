@@ -56,17 +56,6 @@ _irq_%1_handler:
 %endmacro
 
 
-GLOBAL sys_42
-sys_42:
-    push    rbp
-    mov     rbp, rsp
-    mov     rax, 42
-    int     80h
-    pop     rbp
-    retn
-
-
-
 idt_pic_master_mask:
     push    rbp
     mov     rbp, rsp
