@@ -1,77 +1,52 @@
-	 enum RTC_STATS_MASK 
+#include <stdint.h>	
+#include <rtc-driver.h>
+#include <io.h>
+
+
+unsigned get_rtc_seconds()
 {
-	RTC_STATS_MASK_SEC					=	0x00,
-	RTC_STATS_MASK_SEC_ALARM			=	0x01,
-	RTC_STATS_MASK_MIN					=	0x02,
-	RTC_STATS_MASK_MIN_ALARM			=	0x03,
-	RTC_STATS_MASK_HOURS				=	0x04,
-	RTC_STATS_MASK_HOURS_ALARM			=	0x05,
-	RTC_STATS_MASK_DAY_OF_WEEK			=	0x06,
-	RTC_STATS_MASK_DAY_OF_MONTH			=	0x07,
-	RTC_STATS_MASK_MONTH				=	0x08,
-	RTC_STATS_MASK_YEAR					=	0x09,
-	RTC_STATS_MASK_STATUS_REGISTER_A	=	0x0A,
-	RTC_STATS_MASK_STATUS_REGISTER_B	=	0x0B,
-	RTC_STATS_MASK_STATUS_REGISTER_c	=	0x0C,
-	RTC_STATS_MASK_STATUS_REGISTER_D	=	0x0D,
-	RTC_STATS_MASK_DIAGNOSTIC			=	0x0E,
-	RTC_STATS_MASK_SHUTDOWN_STATUS		=	0x0F,
-
-};
-
-
-
-uint16_t get_rtc_seconds()
-{
-	outportb(70h, RTC_STATS_MASK_SEC);
-	return	(unit16_t )inportb(71h);
+	return get_rtc_crt(RTC_STATS_MASK_SEC);
 }
 
-uint16_t get_rtc_minutes()
+unsigned get_rtc_minutes()
 {
-	outportb(70h, RTC_STATS_MASK_MIN);
-	return	(unit16_t )inportb(71h);
+	return get_rtc_crt(RTC_STATS_MASK_MIN);
 }
 
 
-uint16_t get_rtc_hours()
+unsigned get_rtc_hours()
 {
-	outportb(70h, RTC_STATS_MASK_HOURS);
-	return	(unit16_t )inportb(71h);
+	return get_rtc_crt(RTC_STATS_MASK_HOURS);
 }
 
 
-uint16_t get_rtc_day_of_week()
+unsigned get_rtc_day_of_week()
 {
-	outportb(70h, RTC_STATS_MASK_DAY_OF_WEEK);
-	return	(unit16_t )inportb(71h);
+	return get_rtc_crt(RTC_STATS_MASK_DAY_OF_WEEK);
 }
 
 
-uint16_t get_rtc_day_of_month()
+unsigned get_rtc_day_of_month()
 {
-	outportb(70h, RTC_STATS_MASK_DAY_OF_MONTH);
-	return	(unit16_t )inportb(71h);
+	return get_rtc_crt(RTC_STATS_MASK_DAY_OF_MONTH);
 }
 
 
-uint16_t get_rtc_month()
+unsigned get_rtc_month()
 {
-	outportb(70h, RTC_STATS_MASK_MONTH);
-	return	(unit16_t )inportb(71h);
+	return get_rtc_crt(RTC_STATS_MASK_MONTH);
 }
 
 
-uint16_t get_rtc_year()
+unsigned get_rtc_year()
 {
-	outportb(70h, RTC_STATS_MASK_YEAR);
-	return	(unit16_t )inportb(71h);
+	return get_rtc_crt(RTC_STATS_MASK_YEAR);
 }
 
-unit16_t get_rtc_crt(RTC_STATS_MASK cmd)
+unsigned get_rtc_crt(enum RTC_STATS_MASK cmd)
 {
-	outportb(70h, cmd);
-	return	(unit16_t )inportb(71h);
+	outportb((unsigned)RTC_CMD_PORT, (unsigned)cmd);
+	return	inportb((unsigned) RTC_DATA_PORT);
 
 }
 
@@ -83,7 +58,7 @@ void set_rtc_seconds(uint8_t  seconds)
 
 void set_rtc_minutes(uint8_t minutes)
 {
-set_rtc_crt(RTC_STATS_MASK_MIN, minutes);
+	set_rtc_crt(RTC_STATS_MASK_MIN, minutes);
 }
 
 
@@ -115,8 +90,8 @@ void set_rtc_year(uint8_t year)
 	set_rtc_crt(RTC_STATS_MASK_YEAR, year);
 }
 
-void set_rtc_crt(RTC_STATS_MASK cmd, uint8_t data)
+void set_rtc_crt(enum RTC_STATS_MASK cmd, uint8_t data)
 {
-	outportb(70h, cmd);
-	outportb(71h, data);
+	outportb((unsigned)RTC_CMD_PORT, (unsigned)cmd);
+	outportb((unsigned)RTC_DATA_PORT, (unsigned)data);
 }
