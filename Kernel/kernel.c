@@ -6,6 +6,7 @@
 #include <video.h>
 #include <interrupts.h>
 #include <keyboard.h>
+#include <rtc-driver.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -123,7 +124,8 @@ int main()
 
 	ncNewline();
 	ncPrint("Done.");
-//	vid_clr();
+
+	vid_clr();
 	while (1);
 	return 0;
 }
