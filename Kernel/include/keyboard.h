@@ -1,5 +1,6 @@
-//#define false  0
-//#define true  1
+#ifndef __keyboard
+#define __keyboard 1
+
 #include <stdint.h>
 
 #define KEY_BUFFER_SIZE  64
@@ -194,6 +195,8 @@ void kbrd_install ();
 void key_buffer_init();
 void key_buffer_add();
 void key_buffer_reset();
+int key_buffer_is_full();
+int buffer_is_empty();
 
 // Get from buffer functions
 enum KEYCODE kbrd_get_key ();
@@ -210,3 +213,5 @@ void kbrd_enc_send_cmd (uint8_t cmd);
 int isascii(int c);
 
 void kbrd_irq ();
+
+#endif

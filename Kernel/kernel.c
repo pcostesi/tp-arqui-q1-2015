@@ -123,6 +123,7 @@ int main()
 
 	ncNewline();
 	ncPrint("Done.");
+
 //	vid_clr();
 	while (1);
 	return 0;

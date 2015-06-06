@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <io.h>
 #include <video.h>
+#include <sound.h>
 
 #define false  0
 #define true   1
@@ -75,33 +76,14 @@ enum KBRD_CTRL_CMDS
 	KBRD_CTRL_CMD_WRITE_OUT_PORT	=	0xD1,
 	KBRD_CTRL_CMD_READ_TEST_INPUTS	=	0xE0,
 	KBRD_CTRL_CMD_SYSTEM_RESET		=	0xFE,
-	KBRD_CTRL_CMD_MOUSE_DISABLE		=	0xA7,
-	KBRD_CTRL_CMD_MOUSE_ENABLE		=	0xA8,
-	KBRD_CTRL_CMD_MOUSE_PORT_TEST	=	0xA9,
-	KBRD_CTRL_CMD_MOUSE_WRITE		=	0xD4
-};
-
-// scan error codes ------------------------------------------
-
-enum KBRD_ERROR 
-{
-	KBRD_ERR_BUF_OVERRUN			=	0,
-	KBRD_ERR_ID_RET					=	0x83AB,
-	KBRD_ERR_BAT					=	0xAA,	//note: can also be L. shift key make code
-	KBRD_ERR_ECHO_RET				=	0xEE,
-	KBRD_ERR_ACK					=	0xFA,
-	KBRD_ERR_BAT_FAILED				=	0xFC,
-	KBRD_ERR_DIAG_FAILED			=	0xFD,
-	KBRD_ERR_RESEND_CMD				=	0xFE,
-	KBRD_ERR_KEY					=	0xFF
 };
 
 
-//! original xt scan code set. Array index==make code
-//! change what keys the scan code corrospond to if your scan code set is different
+// original xt scan code set. Array index==make code
+// change what keys the scan code corrospond to if your scan code set is different
 static int kbrdscancode_std [] = {
 
-	//! key			scancode
+	// key			scancode
 	KEY_UNKNOWN,	//0
 	KEY_ESCAPE,		//1
 	KEY_1,			//2
@@ -197,26 +179,11 @@ uint8_t ctrl_hold;
 
 //Key Buffer variables	
 static enum KEYCODE key_buffer[KEY_BUFFER_SIZE];
-static int buffer_current_key;
 static int buffer_last_key;
+static int buffer_first_key;
 
 int kbrd_disable;
 static char scancode;
-
-// sets leds
-void kbrd_set_leds (uint8_t num, uint8_t caps, uint8_t scroll) 
-{
-	uint8_t data = 0;
-
-	// set or clear the bit
-	data = (scroll) ? (data | 1) : data;
-	data = (num) ? (data | 2) : (data & 1);
-	data = (caps) ? (data | 4) : (data & 3);
-
-	// send the command -- update keyboard LEDs
-	kbrd_enc_send_cmd ((uint8_t)KBRD_ENC_CMD_SET_LED);
-	kbrd_enc_send_cmd (data);
-}
 
 // convert key to an ascii character
 char kbrd_key_to_ascii (enum KEYCODE code)
@@ -330,50 +297,16 @@ char kbrd_key_to_ascii (enum KEYCODE code)
 	return 0;
 }
 
-
-
-
-
-
 int isascii(int c)
 {
 	return c >= 0 && c< 128;
 }
 
-
-// disables the keyboard
-void kbrd_disable_cmd () 
-{
-	kbrd_ctrl_send_cmd ((uint8_t)KBRD_CTRL_CMD_DISABLE);
-	kbrd_disable = true;
-}
-
-// enables the keyboard
-void kbrd_enable () 
-{
-	kbrd_ctrl_send_cmd (KBRD_CTRL_CMD_ENABLE);
-	kbrd_disable = false;
-}
-
-// returns true if keyboard is disabled
-uint8_t kbrd_is_disabled () 
-{
-	return kbrd_disable;
-}
-
-// reset the system
-void kbrd_reset_system () 
-{
-	// writes 11111110 to the output port (sets reset system line low)
-	kbrd_ctrl_send_cmd (KBRD_CTRL_CMD_WRITE_OUT_PORT);
-	kbrd_enc_send_cmd (0xfe);
-}
-
-//Key buffer functions
+/*****Key buffer functions*****/
 void key_buffer_init()
 {
-	buffer_current_key = -1;
-	buffer_last_key = -1;
+	buffer_last_key = 0;
+	buffer_first_key = 0;
 	for(int k = 0; k < KEY_BUFFER_SIZE; k++){
 		key_buffer[k] = KEY_UNKNOWN;
 	}
@@ -381,11 +314,25 @@ void key_buffer_init()
 
 void key_buffer_add(enum KEYCODE key)
 {
-	if( !( (buffer_last_key+1) % KEY_BUFFER_SIZE == buffer_current_key) )
+	if( key_buffer_is_full() )
 	{
-		buffer_last_key = (++buffer_last_key) % KEY_BUFFER_SIZE;
-		key_buffer[buffer_last_key] = key;
+		beep();
 	}
+	else
+	{
+		key_buffer[buffer_last_key] = key;
+		buffer_last_key = (++buffer_last_key) % KEY_BUFFER_SIZE;
+	}
+}
+
+int buffer_is_empty()
+{
+	return buffer_first_key == buffer_last_key;
+}
+
+int key_buffer_is_full()
+{
+	return buffer_first_key == (buffer_last_key +1)% KEY_BUFFER_SIZE;
 }
 
 void key_buffer_reset()
@@ -393,60 +340,54 @@ void key_buffer_reset()
 	key_buffer_init();
 }
 
-
 //Returns last element of the key buffer
 enum KEYCODE kbrd_get_key () 
 {
-	if (buffer_last_key == buffer_current_key )
+	if (buffer_is_empty() )
 	{
 		return KEY_UNKNOWN;
 	}
-	return key_buffer[++buffer_current_key];
+	enum KEYCODE c = key_buffer[buffer_first_key];
+	buffer_first_key = ( ++buffer_first_key )% KEY_BUFFER_SIZE;
+	return c;
 }
 
 enum KEYCODE kbrd_get_previous_key()
 {
-	return key_buffer[(buffer_current_key - 1) >= 0 ? (buffer_current_key-1) : KEY_BUFFER_SIZE -1 ];
+	return key_buffer[(buffer_first_key - 1) >= 0 ? (buffer_first_key-1) : (KEY_BUFFER_SIZE -1) ];
 }
 
 
-// returns scroll lock state
+/*****Holds & Locks status*****/
 uint8_t	kbrd_get_scroll_lock () 
 {
 	return scroll_lock;
 }
 
-// returns num lock state
 uint8_t	kbrd_get_numlock () 
 {
 	return num_lock;
 }
 
-// returns caps lock state
 uint8_t	kbrd_get_capslock ()	
 {
 	return caps_lock;
 }
 
-// returns status of control key
 uint8_t	kbrd_get_ctrl ()	
 {
 	return ctrl_hold;
 }
 
-// returns status of alt key
 uint8_t	kbrd_get_alt () 
 {
 	return alt_hold;
 }
 
-// returns status of shift key
 uint8_t	kbrd_get_shift ()	
 {
 	return shift_hold;
 }
-
-
 
 // return last scan code
 uint8_t kbrd_get_last_scan ()	
@@ -454,7 +395,7 @@ uint8_t kbrd_get_last_scan ()
 	return scancode;
 }
 
-
+/*****Direct hardware io functions*****/
 // read status from keyboard controller
 unsigned kbrd_ctrl_read_status () 
 {
@@ -490,7 +431,9 @@ void kbrd_enc_send_cmd (uint8_t cmd)
 	outportb ((unsigned)KBRD_ENC_CMD_REG, (unsigned)cmd);
 }
 
-//	keyboard interrupt handler
+
+
+/*****	keyboard interrupt handler *****/
 void kbrd_irq () 
 {
 	static uint8_t _extended = false;
@@ -566,20 +509,20 @@ void kbrd_irq ()
 						break;
 
 					case KEY_CAPSLOCK:
-						caps_lock = (caps_lock == true) ? false : true;
+						caps_lock = !caps_lock;
 						kbrd_set_leds (num_lock, caps_lock, scroll_lock);
 						break;
 
 					case KEY_KP_NUMLOCK:
-						num_lock = (num_lock == true) ? false : true;
+						num_lock = !num_lock;
 						kbrd_set_leds (num_lock, caps_lock, scroll_lock);
 						break;
 
 					case KEY_SCROLLLOCK:
-						scroll_lock = ((scroll_lock) ? false : true);
+						scroll_lock = !scroll_lock;
 						kbrd_set_leds (num_lock, caps_lock, scroll_lock);
 						break;
-				//	default : key_buffer_add(key);
+					default : key_buffer_add(key);
 				}
 			}
 		}
@@ -601,3 +544,25 @@ void kbrd_install ()
 	shift_hold = alt_hold = ctrl_hold = false;
 }
 
+// sets leds
+void kbrd_set_leds (uint8_t num, uint8_t caps, uint8_t scroll) 
+{
+	uint8_t data = 0;
+
+	// set or clear the bit
+	data = (scroll) ? (data | 1) : data;
+	data = (num) ? (data | 2) : (data & 1);
+	data = (caps) ? (data | 4) : (data & 3);
+
+	// send the command -- update keyboard LEDs
+	kbrd_enc_send_cmd ((uint8_t)KBRD_ENC_CMD_SET_LED);
+	kbrd_enc_send_cmd (data);
+}
+
+// reset the system
+void kbrd_reset_system () 
+{
+	// writes 11111110 to the output port (sets reset system line low)
+	kbrd_ctrl_send_cmd (KBRD_CTRL_CMD_WRITE_OUT_PORT);
+	kbrd_enc_send_cmd (0xfe);
+}
