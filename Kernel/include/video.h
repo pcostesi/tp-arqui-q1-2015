@@ -27,12 +27,13 @@ enum VID_COLOR
 };
 
 void vid_putc(const char c);
-void vid_cursor(const unsigned int row, const unsigned int col);
+void * vid_cursor(const unsigned int row, const unsigned int col);
 void vid_raw_putc(const char c, const enum VID_COLOR);
 char vid_color(const enum VID_COLOR, const enum VID_COLOR);
-void vid_print(const char * str);
+void vid_print(const char * str, unsigned int n);
 void vid_raw_print(const char * str, unsigned int n);
 void vid_println(const char * str);
-void vid_clr();
+void vid_clr(void);
+void vid_flip_buffer(void);
 
 #endif

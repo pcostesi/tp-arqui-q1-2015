@@ -2,6 +2,7 @@
 
 #define COLS ((VID_COLS) * 2)
 #define ROWS (VID_ROWS)
+#define VID_BUF_SIZE (COLS * ROWS)
 
 #define VID_RAW_POS(row, col) ((char *) _vid_video + COLS * (row) + (col))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -11,29 +12,47 @@
 static volatile char * _vid_video = (char *) 0xB8000;
 static volatile char * _vid_cursor = (char *) 0xB8000;
 static char _vid_fmt = (char) 0x07;
+static char vid_buffer[VID_BUF_SIZE];
+static char * vid_buffer_cursor = (char *) vid_buffer;
 
 inline static void vid_scroll();
 inline static void _vid_copy_row(const int row_src, const int row_dst);
 static void _vid_set_cursor(const unsigned int row, const unsigned int col);
 
 
+void vid_flip_buffer(void)
+{
+	char p;
+	char * cur;
+	int idx;
+
+	for (idx = 0; idx < VID_BUF_SIZE; idx++) {
+		p = _vid_video[idx];
+		_vid_video[idx] = vid_buffer[idx];
+		vid_buffer[idx] = p;
+	}
+
+	cur = vid_buffer_cursor;
+	vid_buffer_cursor = _vid_cursor;
+	_vid_cursor = cur;
+}
 
 void vid_raw_print(const char * str, unsigned int n)
 {
-	char * c = (char *) str;
-	char * fmt = (char *) str;
-	while (n--) {
-		vid_raw_putc(*c++, *fmt++);
+	int idx;
+
+	/* if we're asked to print something length 2n + 1, print 'till 2n */
+	for (idx = 0; idx < n / 2; idx++) {
+		vid_raw_putc(str[2 * idx], str[2 * idx + 1];
 	}
 }
 
-void vid_print(const char * str)
+void vid_print(const char * str, unsigned int n)
 {
 	char * p = (char *) str;
-	while (*p != '\0') {
+	while (n--) {
 		vid_putc(*p++);
 	}
-	
 }
 
 void vid_println(const char * str)
@@ -59,6 +78,14 @@ char vid_color(const enum VID_COLOR foreground, const enum VID_COLOR background)
 void vid_putc(const char c)
 {
 	vid_raw_putc(c, _vid_fmt);
+}
+
+
+void * vid_cursor(const unsigned int row, const unsigned int col)
+{
+	void * old = (void *) _vid_cursor;
+	_vid_set_cursor(row, col);
+	return old;
 }
 
 static void _vid_set_cursor(const unsigned int row, const unsigned int col)
@@ -103,7 +130,7 @@ void vid_raw_putc(const char c, const enum VID_COLOR fmt)
 		break;
 
 		case '\b':
-		_vid_set_cursor(row, MAX(col - 1, 0));
+		_vid_set_cursor(row, MAX(col - 2, 0));
 		break;
 
 		case '\t':
@@ -150,3 +177,4 @@ inline static void vid_scroll()
 #undef MIN
 #undef TAB_SIZE
 #undef VID_RAW_POS
+#undef VID_BUF_SIZE
