@@ -1,6 +1,22 @@
 #include <interrupts.h>
 #include <lib.h>
 
+/*
+ * See http://wiki.osdev.org/Interrupt_Descriptor_Table
+ * for more information about each register and such.
+ */
+
+#define IDTE_PRESENT	0x80		/*	Present 				1.......	*/
+#define IDTE_DPL_HW 	0x00		/*	Interrupt GATE HW 		.00.....	*/
+#define IDTE_DPL_SW		0x60		/*	Interrupt GATE SW 		.11.....	*/
+									/*	Storage segment (0) 	...0....	*/
+#define IDTE_I_GATE		0x0E		/*	Gate type (32bit)		....1110	*/
+#define IDTE_T_GATE		0x0F		/*	Gate type (32bit)		....1111	*/
+
+#define IDTE_HW			(IDTE_PRESENT | IDTE_DPL_HW | IDTE_I_GATE)
+#define IDTE_SW			(IDTE_PRESENT | IDTE_DPL_SW | IDTE_I_GATE)
+
+
 /* The following structs are packed to reflect the arch registers. 
  * zX fields MUST BE SET TO 0 OR... FIRE AND BRIMSTONE,
  * cats and dogs living together.
@@ -32,12 +48,12 @@ extern void _sti(void);
 extern void _lidt(void *);
 extern void _sidt(void *);
 extern void _halt(void);
-extern void idt_pic_slave_eoi(char eoi);
-extern void idt_pic_master_eoi(char eoi);
-extern void idt_pic_slave_mask(char mask);
-extern void idt_pic_master_mask(char mask);
+extern void idt_pic_slave_set_map(char);
+extern void idt_pic_master_set_map(char);
+extern void idt_pic_slave_mask(char);
+extern void idt_pic_master_mask(char);
 
-extern void _irq_syscall_handler(void);
+extern void _irq_sys_handler(void);
 
 extern void _irq_20h_handler(void);
 extern void _irq_21h_handler(void);
@@ -47,36 +63,68 @@ extern void _irq_24h_handler(void);
 extern void _irq_25h_handler(void);
 extern void _irq_26h_handler(void);
 extern void _irq_27h_handler(void);
-extern void _int80h(void);
+
+extern void _irq_70h_handler(void);
+extern void _irq_71h_handler(void);
+extern void _irq_72h_handler(void);
+extern void _irq_73h_handler(void);
+extern void _irq_74h_handler(void);
+extern void _irq_75h_handler(void);
+extern void _irq_76h_handler(void);
+extern void _irq_77h_handler(void);
+
+static inline int _irq_get_hw_index(int irq);
 
 void irq_handler(int irq);
+int sys_handler(int RDI, int RSI, int RDX, int RCX, int R8, int R9);
 
-IDT_Handler handlers[IDT_SIZE];
-struct IDT_Register * idtr;
+static IntHwHandler handlers[INT_TABLE_SIZE] = {0};
+static IntSysHandler syscall_handler = (void *) 0;
+static struct IDT_Register * idtr;
 
 
-void syscall(void)
+int sys_handler(int RDI, int RSI, int RDX, int RCX, int R8, int R9)
 {
-	_int80h();
+	register int sysno;
+
+	/* the syscall number is stored in rax */
+    __asm__ __volatile__("mov %%eax, %0" : "=r"(sysno)); /* hackity hack la la */
+	if (syscall_handler == (void *) 0) {
+		return 0;
+	}
+
+	return syscall_handler(sysno, RDI, RSI, RDX, RCX, R8, R9);
+}
+
+static inline int _irq_get_hw_index(int irq)
+{
+	if ((irq & IDT_MASTER)) {
+		return IDT_MASTER - irq;
+	}
+
+	if ((irq & IDT_SLAVE)) {
+		return IDT_SLAVE - irq;
+	}
+
+	return 0;
 }
 
 void irq_handler(int irq)
 {
-	uint16_t index = irq % (uint16_t) IDT_SIZE;
-	if (handlers[index] == (IDT_Handler) 0) {
-		return;
-	}
+	int index = _irq_get_hw_index(irq);
+	IntHwHandler handler;
 
-	_cli();
-	IDT_Handler handler = handlers[index];
-	(handler)(irq);
-	_sti();
+	if (index == -1) return;
+	handler = handlers[index];
+
+	if (handler == (IntHwHandler) 0) return;
+	handler(irq);
 }
 
 static void install_IDT_entry(struct IDT_Entry * table, unsigned int idx,
 							  void (*handler)(void), uint16_t flags)
 {
-	struct IDT_Entry * entry = table + (idx % IDT_SIZE);
+	struct IDT_Entry * entry = table + (idx % INT_IDT_SIZE);
 	entry->z1 = 0;
 	entry->z2 = 0;
 
@@ -88,42 +136,60 @@ static void install_IDT_entry(struct IDT_Entry * table, unsigned int idx,
 	entry->offset_h = (((uint64_t) handler) >> 32) & 0xFFFFFFFF;
 }
 
-void install_IDTR(void)
+void install_interrupts(void)
 {
 	struct IDT_Entry * table;
 	_cli();
 	_sidt(idtr);
 
-	memset(handlers, 0, sizeof(handlers));
-
+	/* enable ALL the interrupts! */
 	idt_pic_master_mask(0);
 	idt_pic_slave_mask(0);
 
-	idt_pic_master_eoi(0x20);
-	idt_pic_slave_eoi(0x70);
+	/* move interrupts to 0x20 and 0x70 (start of non-reserved addrs.) */
+	idt_pic_master_set_map(IDT_MASTER);
+	idt_pic_slave_set_map(IDT_SLAVE);
 	
 	table = (struct IDT_Entry *) idtr->offset;
+
 	/* override int80h entry */
-	install_IDT_entry(table, 0x80, &_irq_syscall_handler, IDTE_HW);
+	install_IDT_entry(table, 0x80, 			&_irq_sys_handler, IDTE_SW);
 
-	/* move interrupts to 0x20 (start of non-reserved addrs.) 
-	 * and override them with our own */
-	install_IDT_entry(table, 0x20, &_irq_20h_handler, IDTE_HW);
-	install_IDT_entry(table, 0x21, &_irq_21h_handler, IDTE_HW);
-	install_IDT_entry(table, 0x22, &_irq_22h_handler, IDTE_HW);
-	install_IDT_entry(table, 0x23, &_irq_23h_handler, IDTE_HW);
-	install_IDT_entry(table, 0x24, &_irq_24h_handler, IDTE_HW);
-	install_IDT_entry(table, 0x25, &_irq_25h_handler, IDTE_HW);
-	install_IDT_entry(table, 0x26, &_irq_26h_handler, IDTE_HW);
-	install_IDT_entry(table, 0x27, &_irq_27h_handler, IDTE_HW);
+	/* override Master HW ints with our own */
+	install_IDT_entry(table, INT_PIT, 		&_irq_20h_handler, IDTE_HW);
+	install_IDT_entry(table, INT_KEYB, 		&_irq_21h_handler, IDTE_HW);
+	/*						 cascade interrupt (not triggered)			*/
+	install_IDT_entry(table, INT_COM2, 		&_irq_23h_handler, IDTE_HW);
+	install_IDT_entry(table, INT_COM1, 		&_irq_24h_handler, IDTE_HW);
+	install_IDT_entry(table, INT_LPT2, 		&_irq_25h_handler, IDTE_HW);
+	install_IDT_entry(table, INT_FLOPPY, 	&_irq_26h_handler, IDTE_HW);
+	install_IDT_entry(table, INT_LPT1, 		&_irq_27h_handler, IDTE_HW);
+	
 
+	/* override Slave HW ints with our own */
+	install_IDT_entry(table, INT_CMOS, 		&_irq_70h_handler, IDTE_HW);
+	install_IDT_entry(table, INT_SCSI1, 	&_irq_71h_handler, IDTE_HW);
+	install_IDT_entry(table, INT_SCSI2, 	&_irq_72h_handler, IDTE_HW);
+	install_IDT_entry(table, INT_SCSI3, 	&_irq_73h_handler, IDTE_HW);
+	install_IDT_entry(table, INT_MOUSE, 	&_irq_74h_handler, IDTE_HW);
+	install_IDT_entry(table, INT_FPU, 		&_irq_75h_handler, IDTE_HW);
+	install_IDT_entry(table, INT_ATA1, 		&_irq_76h_handler, IDTE_HW);
+	install_IDT_entry(table, INT_ATA2, 		&_irq_77h_handler, IDTE_HW);
+	
 	_lidt(idtr);
 	
 	_sti();
 }
 
-void install_IDT_handler(IDT_Handler handler, uint16_t interrupt)
+void install_syscall_handler(IntSysHandler handler)
 {
-	uint16_t index = interrupt % (uint16_t) IDT_SIZE;
+	syscall_handler = handler;
+}
+
+
+void install_hw_handler(IntHwHandler handler, enum INTERRUPT_HW interrupt)
+{
+	uint16_t index = _irq_get_hw_index(interrupt);
+	if (index == -1) return;
 	handlers[index] = handler;
 }

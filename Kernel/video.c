@@ -14,6 +14,8 @@ static char _vid_fmt = (char) 0x07;
 
 inline static void vid_scroll();
 inline static void _vid_copy_row(const int row_src, const int row_dst);
+static void _vid_set_cursor(const unsigned int row, const unsigned int col);
+
 
 
 void vid_raw_print(const char * str, unsigned int n)
@@ -46,7 +48,7 @@ void vid_clr() {
 		*_vid_cursor++ = (char) 0;
 		*_vid_cursor++ = (char) 0;
 	}
-	_vid_cursor = (char *) _vid_video;
+	_vid_set_cursor(0, 0);
 }
 
 char vid_color(const enum VID_COLOR foreground, const enum VID_COLOR background)
@@ -59,7 +61,7 @@ void vid_putc(const char c)
 	vid_raw_putc(c, _vid_fmt);
 }
 
-void _vid_set_cursor(const unsigned int row, const unsigned int col)
+static void _vid_set_cursor(const unsigned int row, const unsigned int col)
 {
 	char * raw = VID_RAW_POS(row, col);
 	char * _VID_MAX_POS = VID_RAW_POS(ROWS - 1, COLS);

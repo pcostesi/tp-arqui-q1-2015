@@ -15,6 +15,8 @@ extern uint8_t bss;
 extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
+extern void sys_42(void);
+
 static const uint64_t PageSize = 0x1000;
 
 static void * const sampleCodeModuleAddress = (void*)0x40000;
@@ -78,14 +80,18 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-IDT_Handler int80h(int irq)
+IntSysHandler int80h(int sysno, int RDI, int RSI, int RDX, int RCX, int R8, int R9)
 {
-	char str[] = {'0', '0', 0};
-	str[0] += irq / 10;
-	str[1] += irq % 10;
-	/*vid_println(str);
-	vid_putc('\n');*/
-	return;
+	switch (sysno) {
+		case 42:
+		while (1) {
+			vid_print("42 ");
+		}
+
+		default:
+		return 0;
+	}
+	return 0;
 }
 
 int main()
@@ -115,17 +121,17 @@ int main()
 */
 	ncPrint("[Finished]");
 
-	install_IDTR();
-	install_IDT_handler((IDT_Handler) &int80h, 0x80);
-	install_IDT_handler((IDT_Handler) &kbrd_irq, 0x21);
-	install_IDT_handler((IDT_Handler) &int80h, 0x20);
-	
+	install_syscall_handler((IntSysHandler) &int80h);
+	install_hw_handler((IntHwHandler) &kbrd_irq, INT_KEYB);
+	install_interrupts();
+
 	kbrd_install();
 
 	ncNewline();
 	ncPrint("Done.");
 
-	vid_clr();
+	sys_42();
+
 	while (1);
 	return 0;
 }

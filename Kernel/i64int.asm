@@ -3,35 +3,68 @@ GLOBAL _sti
 GLOBAL _halt
 GLOBAL _lidt
 GLOBAL _sidt
-GLOBAL _int80h
 GLOBAL idt_pic_master_mask
 GLOBAL idt_pic_slave_mask
-GLOBAL idt_pic_master_eoi
-GLOBAL idt_pic_slave_eoi
-GLOBAL _irq_syscall_handler
-
+GLOBAL idt_pic_master_set_map
+GLOBAL idt_pic_slave_set_map
+GLOBAL _irq_sys_handler
 
 EXTERN irq_handler
+EXTERN sys_handler
 
 
 SECTION .text
 
-
-%macro _idt_irq_handler 1
+%macro _idt_irq_master_handler 1
 GLOBAL _irq_%1_handler
 
 _irq_%1_handler:
-	cli
-	mov rdi, %1
-	call irq_handler
-	
-	;signal pic
-	mov al, 20h
-	out 20h, al
-	
-	sti
-	iretq
+    cli
+    push rax
+    mov rdi, %1
+    call irq_handler
+    
+    ;signal master pic
+    mov al, 20h
+    out 20h, al
+    
+    pop rax
+    sti
+    iretq
 %endmacro
+
+%macro _idt_irq_slave_handler 1
+GLOBAL _irq_%1_handler
+
+_irq_%1_handler:
+    cli
+    push rax
+    mov rdi, %1
+    call irq_handler
+    
+    ;signal master pic
+    mov al, 20h
+    out 20h, al
+
+    ;signal slave pic
+    mov al, 0xA0
+    out 0xA0, al
+    
+    pop rax
+    sti
+    iretq
+%endmacro
+
+
+GLOBAL sys_42
+sys_42:
+    push    rbp
+    mov     rbp, rsp
+    mov     rax, 42
+    int     80h
+    pop     rbp
+    retn
+
 
 
 idt_pic_master_mask:
@@ -57,7 +90,7 @@ idt_pic_slave_mask:
     retn
 
 
-idt_pic_master_eoi:
+idt_pic_master_set_map:
     push    rbp
     mov     rbp, rsp
     push	rax
@@ -68,7 +101,7 @@ idt_pic_master_eoi:
     retn
 
 
-idt_pic_slave_eoi:
+idt_pic_slave_set_map:
     push    rbp
     mov     rbp, rsp
     push	rax
@@ -80,34 +113,33 @@ idt_pic_slave_eoi:
 
 
 ;Int 80h
-_irq_syscall_handler:
-	push rdi
-	mov rdi, 80h
+_irq_sys_handler:
 	cli
-
-	call irq_handler
-	
-	pop rdi
+	call sys_handler
 	sti
 	iretq
 
 
-_idt_irq_handler 20h
-_idt_irq_handler 21h
-_idt_irq_handler 22h
-_idt_irq_handler 23h
-_idt_irq_handler 24h
-_idt_irq_handler 25h
-_idt_irq_handler 26h
-_idt_irq_handler 27h
+; PIC Master ints
+_idt_irq_master_handler 20h
+_idt_irq_master_handler 21h
+_idt_irq_master_handler 22h
+_idt_irq_master_handler 23h
+_idt_irq_master_handler 24h
+_idt_irq_master_handler 25h
+_idt_irq_master_handler 26h
+_idt_irq_master_handler 27h
 
+; PIC Slave ints
+_idt_irq_slave_handler 70h
+_idt_irq_slave_handler 71h
+_idt_irq_slave_handler 72h
+_idt_irq_slave_handler 73h
+_idt_irq_slave_handler 74h
+_idt_irq_slave_handler 75h
+_idt_irq_slave_handler 76h
+_idt_irq_slave_handler 77h
 
-_int80h:
-    push    rbp
-    mov     rbp, rsp
-	int 	80h
-    pop 	rbp
-    ret
 
 _lidt:
     push    rbp
