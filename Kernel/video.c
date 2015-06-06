@@ -55,12 +55,6 @@ void vid_print(const char * str, unsigned int n)
 	}
 }
 
-void vid_println(const char * str)
-{
-	vid_print(str);
-	vid_putc('\n');
-}
-
 void vid_clr() {
 	int i;
 	for (i = 0; i < COLS * ROWS ; i++) {
