@@ -33,7 +33,7 @@ enum INTERRUPT_HW
 
 
 typedef void (* IntHwHandler)(int irq);
-typedef int (* IntSysHandler)(int syscall, int RDI, int RSI, int RDX, int RCX, int R8, int R9);
+typedef int (* IntSysHandler)(int syscall, int RDI, int RSI, int RDX, int R10, int R8, int R9);
 
 /* I personally find typedefs ugly, as they hide too much details in kernel impl.
  * and break the expectations in forward declaration of structures.

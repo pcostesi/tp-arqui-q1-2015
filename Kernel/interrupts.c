@@ -76,14 +76,14 @@ extern void _irq_77h_handler(void);
 static inline int _irq_get_hw_index(int irq);
 
 void irq_handler(int irq);
-int sys_handler(int RDI, int RSI, int RDX, int RCX, int R8, int R9);
+int sys_handler(int RDI, int RSI, int RDX, int R10, int R8, int R9);
 
 static IntHwHandler handlers[INT_TABLE_SIZE] = {0};
 static IntSysHandler syscall_handler = (void *) 0;
 static struct IDT_Register * idtr;
 
 
-int sys_handler(int RDI, int RSI, int RDX, int RCX, int R8, int R9)
+int sys_handler(int RDI, int RSI, int RDX, int R10, int R8, int R9)
 {
 	register int sysno;
 
@@ -93,7 +93,7 @@ int sys_handler(int RDI, int RSI, int RDX, int RCX, int R8, int R9)
 		return 0;
 	}
 
-	return syscall_handler(sysno, RDI, RSI, RDX, RCX, R8, R9);
+	return syscall_handler(sysno, RDI, RSI, RDX, R10, R8, R9);
 }
 
 static inline int _irq_get_hw_index(int irq)

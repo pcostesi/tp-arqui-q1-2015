@@ -104,7 +104,10 @@ idt_pic_slave_set_map:
 ;Int 80h
 _irq_sys_handler:
 	cli
+    push rcx
+    mov rcx, r10    ; closely emulate syscall
 	call sys_handler
+    pop rcx
 	sti
 	iretq
 
