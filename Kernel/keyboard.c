@@ -1,5 +1,6 @@
 #include <keyboard.h>
 #include <stdint.h>
+#include <io.h>
 #include <video.h>
 
 #define false  0
@@ -585,32 +586,7 @@ void kbrd_irq ()
 	}
 }
 
-/*****************************************************************************
-*****************************************************************************/
-void outportb(unsigned port, unsigned val)
-{
- 
-__asm__ __volatile__("outb %b0,%w1"
-:
-: "a"(val), "d"(port));
- 
-}
-
-
-/*****************************************************************************
-*****************************************************************************/
-unsigned inportb(unsigned short port)
-{
- 
-unsigned char ret_val;
- 
-__asm__ __volatile__("inb %1,%0"
-: "=a"(ret_val)
-: "d"(port));
-return ret_val;
- 
-}
-
+/*****Initialization & Reset functions*****/
 // prepares driver for use
 void kbrd_install () 
 {
