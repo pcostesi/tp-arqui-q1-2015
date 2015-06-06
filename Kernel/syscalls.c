@@ -49,7 +49,7 @@ int syscall_read(unsigned int fd, char * buf, unsigned int size)
 	char code;
 
 	/* this function will return when the buffer gets consumed! */
-	while ((keycode = kbrd_get_key) != KEY_UNKNOWN) {
+	while ((keycode = kbrd_get_key()) != KEY_UNKNOWN) {
 		read++;
 		/* Most naive version to get keys working */
 		code = (char) keycode;
