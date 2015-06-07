@@ -24,7 +24,7 @@ void syscall_wake(void)
 	video_dormant = 0;
 }
 
-void syscall_write(unsigned int fd, char *str, unsigned int size)
+int syscall_write(unsigned int fd, char *str, unsigned int size)
 {
 	if (video_dormant) {
 		syscall_wake();
@@ -40,23 +40,25 @@ void syscall_write(unsigned int fd, char *str, unsigned int size)
 		
 		case 3:
 		vid_raw_print(str, size);
-		return;
+		return size;
 
 		default:
-		return;
+		return -1;
 	}
 	vid_print(str, size);
+	return size;
 }
 
 int syscall_read(unsigned int fd, char * buf, unsigned int size)
 {
-	int read = -1;
+	int read = 0;
 	enum KEYCODE keycode;
 	char code;
 
 	/* this function will return when the buffer gets consumed! */
-	while ((keycode = kbrd_get_key()) != KEY_UNKNOWN) {
+	while (size && (keycode = kbrd_get_key()) != KEY_UNKNOWN && !buffer_is_empty()) {
 		read++;
+		size--;
 		/* Most naive version to get keys working */
 		code = (char) keycode;
 		buf[read] = code;
@@ -65,12 +67,13 @@ int syscall_read(unsigned int fd, char * buf, unsigned int size)
 	return read;
 }
 
-IntSysHandler int80h(int sysno, int RDI, int RSI, int RDX, int R10, int R8, int R9)
+uint64_t int80h(uint64_t sysno, uint64_t RDI, uint64_t RSI, uint64_t RDX, uint64_t RCX,
+	uint64_t R8, uint64_t R9)
 {
 	int exitno = 0;
 	switch (sysno) {
 		case 0: /* sys_write fd buf size */
-		syscall_write((unsigned int) RDI, (char *) RSI, (unsigned int) RDX);
+		exitno = syscall_write((unsigned int) RDI, (char *) RSI, (unsigned int) RDX);
 		break;
 
 		case 1: /* sys_read fd buf size */
@@ -82,6 +85,8 @@ IntSysHandler int80h(int sysno, int RDI, int RSI, int RDX, int R10, int R8, int 
 		break;
 
 		case 48: /* sys_shutdown */
+		vid_clr();
+		vid_print("\n\tHalted X(", 11);
 		_halt();
 		break;
 
@@ -94,5 +99,5 @@ IntSysHandler int80h(int sysno, int RDI, int RSI, int RDX, int R10, int R8, int 
 		default:
 		return 0;
 	}
-	return 0;
+	return exitno;
 }

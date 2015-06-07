@@ -33,7 +33,7 @@ void vid_flip_buffer(void)
 	}
 
 	cur = vid_buffer_cursor;
-	vid_buffer_cursor = _vid_cursor;
+	vid_buffer_cursor = (char *) _vid_cursor;
 	_vid_cursor = cur;
 }
 

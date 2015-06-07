@@ -83,10 +83,18 @@ int main()
 {	
 	/* driver initialization */
 	/* set up IDTs & int80h */
+
+	install_syscall_handler((IntSysHandler) &int80h);
+	install_hw_handler((IntHwHandler) &kbrd_irq, INT_KEYB);
+	install_interrupts();
+
+	kbrd_install();
+	
 	/* timer/"proto-scheduler" initialization */
 	/* call shell (how do we call as userspace?) */
 
-	/*ncPrint("[Kernel Main]");
+	
+	ncPrint("[Kernel Main]");
 	ncNewline();
 	ncPrint("  Sample code module at 0x");
 	ncPrintHex((uint64_t)sampleCodeModuleAddress);
@@ -103,17 +111,9 @@ int main()
 	ncPrint((char*)sampleDataModuleAddress);
 	ncNewline();
 	ncNewline();
-*/
+
 	ncPrint("[Finished]");
-
-	install_syscall_handler((IntSysHandler) &int80h);
-	install_hw_handler((IntHwHandler) &kbrd_irq, INT_KEYB);
-	install_interrupts();
-
-	kbrd_install();
-
-	ncNewline();
-	ncPrint("Done.");
+	
 
 	while (1);
 	return 0;
