@@ -15,12 +15,40 @@ EXTERN sys_handler
 
 SECTION .text
 
+; see https://msdn.microsoft.com/en-us/library/6t169e9c.aspx
+%macro ENTER 0
+    push    rbp
+    mov     rbp, rsp
+    push    RBX
+    push    RDI
+    push    RSI
+    push    RSP
+    push    R12
+    push    R13
+    push    R14
+    push    R15
+%endmacro
+
+%macro LEAVE 0
+    pop     R15
+    pop     R14
+    pop     R13
+    pop     R12
+    pop     RSP
+    pop     RSI
+    pop     RDI
+    pop     RBX
+    pop     rbp
+    ret
+%endmacro
+
 %macro _idt_irq_master_handler 1
 GLOBAL _irq_%1_handler
 
 _irq_%1_handler:
     cli
     push rax
+    push rdi
     mov rdi, %1
     call irq_handler
     
@@ -28,6 +56,7 @@ _irq_%1_handler:
     mov al, 20h
     out 20h, al
     
+    pop rdi
     pop rax
     sti
     iretq
@@ -39,6 +68,7 @@ GLOBAL _irq_%1_handler
 _irq_%1_handler:
     cli
     push rax
+    push rdi
     mov rdi, %1
     call irq_handler
     
@@ -50,6 +80,7 @@ _irq_%1_handler:
     mov al, 0xA0
     out 0xA0, al
     
+    pop rdi
     pop rax
     sti
     iretq
@@ -57,57 +88,40 @@ _irq_%1_handler:
 
 
 idt_pic_master_mask:
-    push    rbp
-    mov     rbp, rsp
-    push	rax
+    ENTER
     mov 	al, dil
     out		21h, al
-    pop 	rax
-    pop 	rbp
-    retn
+    LEAVE
 
 
 idt_pic_slave_mask:
-    push    rbp
-    mov     rbp, rsp
-
-    push	rax
+    ENTER
     mov 	al, dil
     out		0A1h, al
-    pop 	rax
-    pop 	rbp
-    retn
+    LEAVE
 
 
 idt_pic_master_set_map:
-    push    rbp
-    mov     rbp, rsp
-    push	rax
+    ENTER
     mov 	al, dil
     out		20h, al
-    pop 	rax
-    pop 	rbp
-    retn
+    LEAVE
 
 
 idt_pic_slave_set_map:
-    push    rbp
-    mov     rbp, rsp
-    push	rax
+    ENTER
     mov 	al, dil
     out		0A0h, al
-    pop 	rax
-    pop 	rbp
-    retn
+    LEAVE
 
 
 ;Int 80h
 _irq_sys_handler:
 	cli
-    push rcx
-    mov rcx, r10    ; closely emulate syscall
+    ;push rcx
+    ;mov rcx, r10    ; closely emulate syscall
 	call sys_handler
-    pop rcx
+    ;pop rcx
 	sti
 	iretq
 
@@ -134,19 +148,15 @@ _idt_irq_slave_handler 77h
 
 
 _lidt:
-    push    rbp
-    mov     rbp, rsp
+    ENTER
     lidt 	[rdi]
-    pop 	rbp
-    retn
+    LEAVE
 
 
 _sidt:
-    push    rbp
-    mov     rbp, rsp
+    ENTER
     sidt 	[rdi]
-    pop 	rbp
-    retn
+    LEAVE
 
 
 _cli:

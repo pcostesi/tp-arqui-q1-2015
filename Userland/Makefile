@@ -1,6 +1,9 @@
 include Makefile.inc
 
-all: sampleCodeModule sampleDataModule
+all: libc sampleCodeModule sampleDataModule
+
+libc:
+	cd libc; make
 
 sampleCodeModule:
 	cd SampleCodeModule; make
