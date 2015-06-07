@@ -15,10 +15,9 @@ EXTERN sys_handler
 
 SECTION .text
 
+
 ; see https://msdn.microsoft.com/en-us/library/6t169e9c.aspx
-%macro ENTER 0
-    push    rbp
-    mov     rbp, rsp
+%macro PUSHALL 0
     push    RBX
     push    RDI
     push    RSI
@@ -29,7 +28,7 @@ SECTION .text
     push    R15
 %endmacro
 
-%macro LEAVE 0
+%macro POPALL 0
     pop     R15
     pop     R14
     pop     R13
@@ -38,6 +37,16 @@ SECTION .text
     pop     RSI
     pop     RDI
     pop     RBX
+%endmacro
+
+%macro ENTER 0
+    push    rbp
+    mov     rbp, rsp
+    PUSHALL
+%endmacro
+
+%macro LEAVE 0
+    POPALL
     pop     rbp
     ret
 %endmacro
@@ -118,10 +127,11 @@ idt_pic_slave_set_map:
 ;Int 80h
 _irq_sys_handler:
 	cli
-    ;push rcx
-    ;mov rcx, r10    ; closely emulate syscall
+    push    RBP
+    PUSHALL
 	call sys_handler
-    ;pop rcx
+    POPALL
+    pop     RBP
 	sti
 	iretq
 
