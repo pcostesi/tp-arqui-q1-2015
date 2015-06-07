@@ -79,7 +79,6 @@ enum KBRD_CTRL_CMDS
 
 
 // original xt scan code set. Array index==make code
-// change what keys the scan code corrospond to if your scan code set is different
 static int kbrdscancode_std [] = {
 
 	// key			scancode
