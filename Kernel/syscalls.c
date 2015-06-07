@@ -51,21 +51,24 @@ int syscall_write(unsigned int fd, char *str, unsigned int size)
 
 int syscall_read(unsigned int fd, char * buf, unsigned int size)
 {
-	int read = 0;
+	int read = -1;
 	enum KEYCODE keycode;
 	char code;
 
 	/* this function will return when the buffer gets consumed! */
-	while (size && (keycode = kbrd_get_key()) != KEY_UNKNOWN && !buffer_is_empty()) {
+	while ((keycode = kbrd_get_key()) != KEY_UNKNOWN) {
 		read++;
-		size--;
 		/* Most naive version to get keys working */
-		code = (char) keycode;
-		buf[read] = code;
+		code = kbrd_key_to_ascii(keycode);
+		if(code != 0)
+		{
+			buf[read] = code;
+		}
 	}
 
 	return read;
 }
+
 
 uint64_t int80h(uint64_t sysno, uint64_t RDI, uint64_t RSI, uint64_t RDX, uint64_t RCX,
 	uint64_t R8, uint64_t R9)
