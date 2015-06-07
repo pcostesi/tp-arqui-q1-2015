@@ -1,5 +1,6 @@
 #include <interrupts.h>
 #include <lib.h>
+#include <stdint.h>
 
 /*
  * See http://wiki.osdev.org/Interrupt_Descriptor_Table
@@ -76,24 +77,24 @@ extern void _irq_77h_handler(void);
 static inline int _irq_get_hw_index(int irq);
 
 void irq_handler(int irq);
-int sys_handler(int RDI, int RSI, int RDX, int R10, int R8, int R9);
+uint64_t sys_handler(uint64_t RDI, uint64_t RSI, uint64_t RDX, uint64_t RCX, uint64_t R8, uint64_t R9);
 
 static IntHwHandler handlers[INT_TABLE_SIZE] = {0};
 static IntSysHandler syscall_handler = (void *) 0;
 static struct IDT_Register * idtr;
 
 
-int sys_handler(int RDI, int RSI, int RDX, int R10, int R8, int R9)
+uint64_t sys_handler(uint64_t RDI, uint64_t RSI, uint64_t RDX, uint64_t RCX, uint64_t R8, uint64_t R9)
 {
-	register int sysno;
+	register uint64_t sysno;
 
 	/* the syscall number is stored in rax */
-    __asm__ __volatile__("mov %%eax, %0" : "=r"(sysno)); /* hackity hack la la */
+    __asm__ __volatile__("mov %%rax, %0" : "=r"(sysno)); /* hackity hack la la */
 	if (syscall_handler == (void *) 0) {
 		return 0;
 	}
 
-	return syscall_handler(sysno, RDI, RSI, RDX, R10, R8, R9);
+	return syscall_handler((uint64_t) sysno, RDI, RSI, RDX, RCX, R8, R9);
 }
 
 static inline int _irq_get_hw_index(int irq)
