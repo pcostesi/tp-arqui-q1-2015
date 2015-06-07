@@ -7,6 +7,7 @@
 #include <interrupts.h>
 #include <keyboard.h>
 #include <rtc-driver.h>
+#include <syscalls.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -78,16 +79,6 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-IDT_Handler int80h(int irq)
-{
-	char str[] = {'0', '0', 0};
-	str[0] += irq / 10;
-	str[1] += irq % 10;
-	/*vid_println(str);
-	vid_putc('\n');*/
-	return;
-}
-
 int main()
 {	
 	/* driver initialization */
@@ -115,17 +106,15 @@ int main()
 */
 	ncPrint("[Finished]");
 
-	install_IDTR();
-	install_IDT_handler((IDT_Handler) &int80h, 0x80);
-	install_IDT_handler((IDT_Handler) &kbrd_irq, 0x21);
-	install_IDT_handler((IDT_Handler) &int80h, 0x20);
-	
+	install_syscall_handler((IntSysHandler) &int80h);
+	install_hw_handler((IntHwHandler) &kbrd_irq, INT_KEYB);
+	install_interrupts();
+
 	kbrd_install();
 
 	ncNewline();
 	ncPrint("Done.");
 
-	vid_clr();
 	while (1);
 	return 0;
 }
