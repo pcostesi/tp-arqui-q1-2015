@@ -1,7 +1,4 @@
-extern int write(unsigned int fd, char * str, unsigned int size);
-extern void pause(void);
-extern int read(unsigned int fd, char * str, unsigned int size);
-extern void halt(void);
+#include <libc.h>
 
 int main() {
 	//halt();

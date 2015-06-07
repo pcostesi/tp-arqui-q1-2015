@@ -5,7 +5,7 @@ all: libc sampleCodeModule sampleDataModule
 libc:
 	cd libc; make
 
-sampleCodeModule:
+sampleCodeModule:	libc
 	cd SampleCodeModule; make
 
 sampleDataModule:
