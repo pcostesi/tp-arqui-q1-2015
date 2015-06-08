@@ -8,16 +8,9 @@ int main() {
 	//halt();
 	//pause();
 	char str[] = "hi %d %x %o \n";
-	char ts[5];
+	char ts[] = "time is %d:%d:%d.\n";
 	printf(str, 15, 15, 15);
 	gettime(&timestruct);
-	itoa(timestruct.hour, ts);
-	write(1, ts, 2);
-	write(1, ":", 1);
-	itoa(timestruct.min, ts);
-	write(1, ts, 2);
-	write(1, ":", 1);
-	itoa(timestruct.sec, ts);
-	write(1, ts, 2);
+	printf(ts, timestruct.hour, timestruct.min, timestruct.sec);
 	return 0xDEADBEEF;
 }

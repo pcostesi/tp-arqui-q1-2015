@@ -82,7 +82,7 @@ int vfprintf(int fd, char * fmt, va_list ap)
 {
 	char c;
 	char * ptr = fmt;
-	int in_fmt;
+	int in_fmt = 0;
 	int written = 0;
 
 	while ((c = *ptr++) != (char) 0) {
