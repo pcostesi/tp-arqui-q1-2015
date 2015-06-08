@@ -26,13 +26,13 @@ int valid_time(int sec, int min, int hrs){
 int valid_date(int year, int month, int day){
 	unsigned short monthlen[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-	if (year < 0 || month < 0 || year < 0 || month > 12){
+	if (year < 0 || month < 1 || year < 0 || month > 12){
 		return 0;
 	}
 	if (isleapyear(year) && month == 2) {
 		monthlen[1]++;
 	}
-	if (day>monthlen[month-1]) {
+	if (day>monthlen[month-1] || day < 1) {
 		return 0;
 	}
 	return 1;
