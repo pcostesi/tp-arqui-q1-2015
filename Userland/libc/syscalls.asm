@@ -1,8 +1,8 @@
 SECTION .text
 
-%macro ENTER 0
-	push 	rbp
-	mov 	rbp, rsp
+
+; see https://msdn.microsoft.com/en-us/library/6t169e9c.aspx
+%macro PUSHALL 0
     push    RBX
     push    RDI
     push    RSI
@@ -13,7 +13,7 @@ SECTION .text
     push    R15
 %endmacro
 
-%macro LEAVE 0
+%macro POPALL 0
     pop     R15
     pop     R14
     pop     R13
@@ -22,10 +22,17 @@ SECTION .text
     pop     RSI
     pop     RDI
     pop     RBX
-	pop 	rbp
-	retn
 %endmacro
 
+%macro ENTER 0
+    push    rbp
+    mov     rbp, rsp
+%endmacro
+
+%macro LEAVE 0
+    pop     rbp
+    ret
+%endmacro
 
 %macro _int80h 2
 GLOBAL %1
@@ -33,7 +40,7 @@ GLOBAL %1
     ENTER
 	mov rax, %2
 	int 80h
-	LEAVE
+    LEAVE
 %endmacro
 
 
