@@ -5,9 +5,15 @@
 #include <keyboard.h>
 #include <rtc-driver.h>
 
+#define STDIN  0
+#define STDOUT 1
+#define STDERR 2
+#define STDRAW 3
+
 extern void _halt(void);
 
 static char video_dormant = 0;
+static enum VID_COLOR colors[] = {GRAY, BLACK, RED, BLACK};
 
 void syscall_pause(void)
 {
@@ -32,14 +38,14 @@ int syscall_write(unsigned int fd, char *str, unsigned int size)
 	};
 
 	switch (fd) {
-		case 1:
-		vid_color(WHITE, BLACK);
+		case STDOUT:
+		vid_color(colors[0], colors[1]);
 		break;
-		case 2:
-		vid_color(RED, BLACK);
+		case STDERR:
+		vid_color(colors[2], colors[3]);
 		break;
 		
-		case 3:
+		case STDRAW:
 		vid_raw_print(str, size);
 		return size;
 
@@ -70,6 +76,33 @@ int syscall_read(unsigned int fd, char * buf, unsigned int size)
 	return read;
 }
 
+int syscall_ioctl(unsigned int fd, unsigned long request, void * params)
+{
+	int exitno = 0;
+	if (fd == STDOUT || fd == STDERR || fd == STDRAW) {
+		char high = ((uint64_t) params >> 8) & 0xFF;
+		char low = ((uint64_t) params) & 0xFF;
+			
+		switch (request) {
+			case 0: /* move cursor */
+			vid_cursor(high, low);
+			break;
+
+			case 1: /* clear screen */
+			vid_clr();
+			break;
+
+			case 2: /* change color */
+			vid_color(high, low);
+			if (fd == STDOUT || fd == STDERR) {
+				colors[fd - 1] = high;
+				colors[fd] = low;
+			}
+			break;
+		}
+	}
+	return exitno;
+}
 
 uint64_t int80h(uint64_t sysno, uint64_t RDI, uint64_t RSI, uint64_t RDX, uint64_t RCX,
 	uint64_t R8, uint64_t R9)
@@ -82,6 +115,10 @@ uint64_t int80h(uint64_t sysno, uint64_t RDI, uint64_t RSI, uint64_t RDX, uint64
 
 		case 1: /* sys_read fd buf size */
 		exitno = syscall_read((unsigned int) RDI, (char *) RSI, (unsigned int) RDX);
+		break;
+
+		case 6:
+		exitno = syscall_ioctl((unsigned int) RDI, (unsigned long) RSI, (void *) RDX);
 		break;
 
 		case 34: /* sys_pause */

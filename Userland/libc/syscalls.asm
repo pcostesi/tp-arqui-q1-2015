@@ -45,6 +45,7 @@ GLOBAL %1
 
 _int80h	write, 0
 _int80h read, 1
+_int80h ioctl, 6
 _int80h pause, 34
 _int80h halt, 48
 _int80h shutdown, 48
