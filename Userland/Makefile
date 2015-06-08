@@ -5,7 +5,7 @@ all: libc sampleCodeModule sampleDataModule
 libc:
 	cd libc; make
 
-sampleCodeModule:
+sampleCodeModule:	libc
 	cd SampleCodeModule; make
 
 sampleDataModule:
@@ -13,7 +13,8 @@ sampleDataModule:
 
 clean:
 	cd SampleCodeModule; make clean
+	cd libc; make clean
 	rm -rf *.bin
 
 
-.PHONY: sampleCodeModule all clean
+.PHONY: libc sampleCodeModule all clean

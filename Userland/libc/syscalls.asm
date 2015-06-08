@@ -1,6 +1,5 @@
 SECTION .text
 
-
 ; see https://msdn.microsoft.com/en-us/library/6t169e9c.aspx
 %macro PUSHALL 0
     push    RBX
@@ -43,12 +42,6 @@ GLOBAL %1
     LEAVE
 %endmacro
 
-
-GLOBAL _start
-_start:
-    ENTER
-    call main
-    LEAVE
 
 _int80h	write, 0
 _int80h read, 1
