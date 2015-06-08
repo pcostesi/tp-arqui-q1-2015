@@ -9,8 +9,6 @@
 
 # Object files
 *.o
-*.ao
-*.co
 *.ko
 *.obj
 *.elf

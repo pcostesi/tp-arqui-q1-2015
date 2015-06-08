@@ -13,6 +13,7 @@ sampleDataModule:
 
 clean:
 	cd SampleCodeModule; make clean
+	cd libc; make clean
 	rm -rf *.bin
 
 

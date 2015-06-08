@@ -1,13 +1,12 @@
 include ../Makefile.inc
 
-MODULE=../libc.o
 LIB=../libc.a
 CSOURCES=$(wildcard *.c)
 COBJECTS=$(CSOURCES:.c=.o)
 ASMSOURCES=$(wildcard *.asm)
 ASMOBJECTS=$(ASMSOURCES:.asm=.o)
 
-all:	archive
+all:	clean archive
 
 $(COBJECTS):	$(CSOURCES)
 
@@ -20,10 +19,10 @@ $(ASMOBJECTS):	$(ASMSOURCES)
 	$(ASM) $(ASMFLAGS) $< -o $@
 
 archive:	$(COBJECTS) $(ASMOBJECTS)
+	- rm $(LIB)
 	ar rcs $(LIB) $(ASMOBJECTS) $(COBJECTS)
-	ld -r  $(ASMOBJECTS) $(COBJECTS) -o $(MODULE)
 
 clean:
-	- rm -rf *.o *.co *.ao *.a
+	rm -rf *.o
 
 .PHONY: all clean
