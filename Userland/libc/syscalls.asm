@@ -1,5 +1,6 @@
 SECTION .text
 
+EXTERN main
 
 ; see https://msdn.microsoft.com/en-us/library/6t169e9c.aspx
 %macro PUSHALL 0

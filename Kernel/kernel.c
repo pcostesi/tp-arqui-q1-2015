@@ -89,18 +89,21 @@ int main()
 	install_interrupts();
 
 	kbrd_install();
+	vid_clr();
 	
 	/* timer/"proto-scheduler" initialization */
 	/* call shell (how do we call as userspace?) */
 
-	
+	/*
 	ncPrint("[Kernel Main]");
 	ncNewline();
 	ncPrint("  Sample code module at 0x");
 	ncPrintHex((uint64_t)sampleCodeModuleAddress);
 	ncNewline();
+	*/
 	ncPrint("  Calling the sample code module returned: ");
 	ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
+	/*
 	ncNewline();
 	ncNewline();
 
@@ -113,6 +116,7 @@ int main()
 	ncNewline();
 
 	ncPrint("[Finished]");
+	*/
 	
 
 	while (1);

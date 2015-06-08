@@ -10,7 +10,7 @@ $(MODULE.O): $(SOURCES)
 	$(GCC) $(GCCFLAGS) -c $(SOURCES) -o $(MODULE.O)
 
 $(MODULE):	$(MODULE.O)
-	$(LD) -T sampleCodeModule.ld $(MODULE.O) $(STATICLIBS) -o ../$(MODULE)
+	$(LD) -T sampleCodeModule.ld $(LIBC) $(MODULE.O) -o ../$(MODULE)
 
 clean:
 	rm -rf *.o

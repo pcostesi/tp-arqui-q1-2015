@@ -20,8 +20,8 @@ $(ASMOBJECTS):	$(ASMSOURCES)
 	$(ASM) $(ASMFLAGS) $< -o $@
 
 archive:	$(COBJECTS) $(ASMOBJECTS)
-	ar rcs $(LIB) $(COBJECTS) $(ASMOBJECTS)
-	ld -r $(COBJECTS) $(ASMOBJECTS) -o $(MODULE)
+	ar rcs $(LIB) $(ASMOBJECTS) $(COBJECTS)
+	ld -r  $(ASMOBJECTS) $(COBJECTS) -o $(MODULE)
 
 clean:
 	- rm -rf *.o *.co *.ao *.a
