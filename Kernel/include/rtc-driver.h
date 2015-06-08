@@ -1,6 +1,8 @@
 #ifndef __rtcdriver
 #define __rtcdriver 1
 
+#include <stdint.h>
+
 #define RTC_CMD_PORT 	0x70
 #define RTC_DATA_PORT	0x71
 
