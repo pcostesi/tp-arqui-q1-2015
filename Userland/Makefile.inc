@@ -8,3 +8,4 @@ GCCFLAGS=-m64 -fno-exceptions -std=c99 -Wall -ffreestanding -nostdlib -fno-commo
 ARFLAGS=rvs
 ASMFLAGS=-felf64
 LIBC=-L../ -L./ -lc
+CRT0=../crt0.o

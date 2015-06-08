@@ -2,6 +2,9 @@
 #include <string.h>
 #include <stdio.h>
 
+int banana(int a) {
+	return 2 * a;
+}
 
 int main() {
 	struct rtc_time timestruct;
