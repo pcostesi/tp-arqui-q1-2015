@@ -1,5 +1,6 @@
 #include <syscalls.h>
 #include <video.h>
+#include <time.h>
 #include <interrupts.h>
 #include <keyboard.h>
 #include <rtc-driver.h>
@@ -97,6 +98,14 @@ uint64_t int80h(uint64_t sysno, uint64_t RDI, uint64_t RSI, uint64_t RDX, uint64
 		while (1) {
 			syscall_write(1, "42 ", 3);
 		}
+		break;
+
+		case 200:
+		syscall_get_time((struct rtc_time *) RDI);
+		break;
+
+		case 201:
+		syscall_set_time((struct rtc_time *) RDI);
 		break;
 
 		default:
