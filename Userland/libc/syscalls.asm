@@ -44,9 +44,17 @@ GLOBAL %1
 %endmacro
 
 
+GLOBAL _start
+_start:
+    ENTER
+    call main
+    LEAVE
+
 _int80h	write, 0
 _int80h read, 1
 _int80h pause, 34
 _int80h halt, 48
 _int80h shutdown, 48
 _int80h towel, 32
+_int80h gettime, 300
+_int80h settime, 301
