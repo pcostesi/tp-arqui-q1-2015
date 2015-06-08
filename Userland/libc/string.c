@@ -1,6 +1,8 @@
 #include <libc.h>
 #include <string.h>
 
+/* mostly taken from K&R */
+
 int strlen(char * s)
 {
 	int res = 0;

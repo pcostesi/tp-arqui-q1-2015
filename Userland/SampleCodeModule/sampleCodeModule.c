@@ -1,17 +1,15 @@
 #include <libc.h>
 #include <string.h>
+#include <stdio.h>
 
 
 int main() {
 	struct rtc_time timestruct;
 	//halt();
 	//pause();
-	char str[] = "hi \n";
+	char str[] = "hi %d %x %o \n";
 	char ts[5];
-	write(1, str, 4);
-	write(1, str, 4);
-	write(1, str, 4);
-	write(1, str, 4);
+	printf(str, 15, 15, 15);
 	gettime(&timestruct);
 	itoa(timestruct.hour, ts);
 	write(1, ts, 2);
