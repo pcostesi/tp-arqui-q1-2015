@@ -32,6 +32,6 @@ int gets(char * c, unsigned int n);
 
 int scanf(char *fmt, ...);
 int fscanf(int fd, char *fmt, ...);
-int vfscanf(int fd, char *fmt, ...);
+int vfscanf(int fd, char *fmt, va_list ap);
 
 #endif
