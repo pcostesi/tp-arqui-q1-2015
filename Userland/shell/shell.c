@@ -9,26 +9,56 @@ char shell_buffer[SHELL_BUFFER_SIZE];
 int curr_pos =0;
 
 int cmd_count = 10; /****Must update with each cmd inser/delete****/
-cmd_entry cmd_table [] =
-{
-	{"echo", ECHO_HELP, &echo},
-	{"clear", CLEAR_HELP, &clear},
-	{"date", DATE_HELP, &date},
-	{"time", TIME_HELP, &time},
-	{"setdate", SETDATE_HELP, &set_date},
-	{"settime", SETTIME_HELP, &set_time},
-	{"getchar", GETCHAR_HELP, &getchar_cmd},
-	{"printf", PRINTF_HELP, &printf_cmd},
-	{"scanf", SCANF_HELP, &scanf_cmd},
-	{"help", HELP_HELP, &help}
-};
+
+cmd_entry cmd_table[10];
 
 void init_shell()
 {
+	char fmt[] = "%s";
+	char shell_text[] = "Shell> ";
 	clean_buffer();
+	//initialize_cmd_table(); 
 	prnt_welcome_msg();
-	printf(SHELL_TEXT); 
+	printf(fmt, shell_text);
+
 }
+
+/*void initialize_cmd_table()
+{
+	cmd_table[0].name = "echo";
+	cmd_table[1].name = "clear";
+	cmd_table[2].name = "date";
+	cmd_table[3].name = "time";
+	cmd_table[4].name = "setdate";
+	cmd_table[5].name = "settime";
+	cmd_table[6].name = "getchar";
+	cmd_table[7].name = "printf";
+	cmd_table[8].name = "scanf";
+	cmd_table[9].name = "help";
+	
+	cmd_table[0].help = "Echo repeats the input string following echo statement \n example: \"echo Hello I am using echo\"";
+	cmd_table[1].help = "Clears the screen, uses no arguments, therefore will ignore any ones received\n";
+	cmd_table[2].help = "Prints current system date on screen\n";
+	cmd_table[3].help = "Prints current system time on screen\n";
+	cmd_table[4].help = "Sets system date, format must be dd/mm/yyyy.\nExample: \"setdate 05/05/2015\"\n";
+	cmd_table[5].help = "Sets system time, format must be ss:mm:hh.\n Example: \" settime 23:23:23\"\n";
+	cmd_table[6].help = "Test command for directive board to test getchar() functionality.\n";
+	cmd_table[7].help = "Test command for supreme leaders to test printf() functionality \n";
+	cmd_table[8].help = "Test command for the High Command to test scanf() functionality\n";
+	cmd_table[9].help = "Displays information about following command, syntaxt: \"help \"command_name\"\"\n";
+
+	
+	cmd_table[0].func = &echo;
+	cmd_table[1].func = &clear;
+	cmd_table[2].func = &date;
+	cmd_table[3].func = &time;
+	cmd_table[4].func = &set_date;
+	cmd_table[5].func = &set_time;
+	cmd_table[6].func = &getchar_cmd;
+	cmd_table[7].func = &printf_cmd;
+	cmd_table[8].func = &scanf_cmd;
+	cmd_table[9].func = &help;
+}*/
 
 void update_shell()
 {
@@ -44,7 +74,7 @@ void update_shell()
 		printf("\n");
 		excecute_command(shell_buffer);
 		printf(SHELL_TEXT);
-		void cleanBuffer();
+		clean_buffer();
 	}
 
 	if(curr_pos >= SHELL_BUFFER_SIZE-2)
@@ -136,6 +166,7 @@ void clean_buffer()
 	while(i < SHELL_BUFFER_SIZE && i < curr_pos)
 	{
 		shell_buffer[i] = '\0';
+		i++;
 	}
 	curr_pos = 0;
 }
@@ -143,7 +174,10 @@ void clean_buffer()
 
 void prnt_welcome_msg()
  {
-	printf(WELCOME_MSG);
+ 	char fmt_s[] = "%s";
+ 	char welcome[] = "\n\n***Welcome to Barely Compiles OS***\n\n";
+	printf(fmt_s, welcome);
+	printf(fmt_s, welcome);
 }
 
 //Returns the index of the command in the command table, if such command does not exist, returns -1
@@ -169,9 +203,10 @@ cmd_entry* get_command_table()
 void print_commands()
 {
 	int i;
+	char fmt[] = "%s\n";
 	for( i=0; i < cmd_count; i++)
 	{
-		printf("\t%s\n", cmd_table[i].name);
+		printf(fmt, cmd_table[i].name);
 	}
 
 }

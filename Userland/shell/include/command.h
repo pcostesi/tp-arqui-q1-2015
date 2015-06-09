@@ -5,16 +5,16 @@
 
 
 //Help messages
-#define ECHO_HELP "Echo repeats the input string following echo statement \n example: \"echo Hello I am using echo\""
-#define CLEAR_HELP "Clears the screen, uses no arguments, therefore will ignore any ones received"
-#define DATE_HELP "Prints current system date on screen"
-#define TIME_HELP "Prints current system time on screen"
-#define SETDATE_HELP "Sets system date, format must be dd/mm/yyyy.\nExample: \"setdate 05/05/2015\" \n "
-#define SETTIME_HELP "Sets system time, format must be ss:mm:hh.\n Example: \" settime 23:23:23\"\n "
-#define GETCHAR_HELP "Test command for directive board to test getchar() functionality.\n"
-#define PRINTF_HELP "Test command for supreme leaders to test printf() functionality \n"
-#define SCANF_HELP "Test command for the High Command to test scanf() functionality\n"
-#define HELP_HELP "Displays information about following command, syntaxt: \"help \"command_name\"\"\n "
+//#define ECHO_HELP "Echo repeats the input string following echo statement \n example: \"echo Hello I am using echo\""
+//#define CLEAR_HELP "Clears the screen, uses no arguments, therefore will ignore any ones received\n"
+//#define DATE_HELP "Prints current system date on screen\n"
+//#define TIME_HELP "Prints current system time on screen\n"
+//#define SETDATE_HELP "Sets system date, format must be dd/mm/yyyy.\nExample: \"setdate 05/05/2015\"\n "
+//#define SETTIME_HELP "Sets system time, format must be ss:mm:hh.\n Example: \" settime 23:23:23\"\n"
+//#define GETCHAR_HELP "Test command for directive board to test getchar() functionality.\n"
+//#define PRINTF_HELP "Test command for supreme leaders to test printf() functionality \n"
+//#define SCANF_HELP "Test command for the High Command to test scanf() functionality\n"
+//#define HELP_HELP "Displays information about following command, syntaxt: \"help \"command_name\"\"\n"
 
 //Error messages
 #define SETDATE_ERROR_INVALID_FORMAT "Invalid date inserted, please respect dd/mm/yyyy format & insert a valid date.\n"

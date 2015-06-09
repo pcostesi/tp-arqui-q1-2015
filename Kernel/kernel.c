@@ -140,9 +140,7 @@ int main()
 		"sampleDataModule",
 		"sampleCodeModule"
 	};
-
     ((EntryPoint)shellModuleAddress)(sizeof(moduleNames) / sizeof(char *), moduleNames, moduleAddresses);
-
     vid_print("\nHalting", 8);
 	while (1);
 	return 0;

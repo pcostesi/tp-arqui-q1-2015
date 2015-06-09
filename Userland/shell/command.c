@@ -197,7 +197,7 @@ int valid_date(int year, int month, int day)
 int is_leap_year(int year)
 {
 	return ((!(year%4) && (year%100)) || !(year%400));
-}
+}	
 
 
 void getchar_cmd(char *argv[], int argc) 
@@ -226,27 +226,27 @@ void scanf_cmd(char *argv[], int argc)
 	printf("Welcome to scanf user test:\n ");
 	printf("And so, the trial begins...\n");
 	printf("Please type in a number: ");
-	scanf("%d", &n);
+	//scanf("%d", &n);
 	printf("You typed in: %d\n\n", n);
 	reset_vect(vec);
 	
 	printf("Trial number 2...type in a short text: ");
-	scanf("%s", vec);
+	//scanf("%s", vec);
 	printf("You typed in: %s\n\n", vec);
 	reset_vect(vec);
 
 	printf("Trial number 3...Please type in a single character: ");
-	scanf("%c", vec);
+	//("%c", vec);
 	printf("\nYou typed: %c\n\n", vec[0]);
 	reset_vect(vec);
 
 	printf("And so, the final trial begins:\n");
 	printf("Are you ready? Type in Y or N\n");
-	scanf("%s", vec);
+	//scanf("%s", vec);
 	reset_vect(vec);
 	printf(" Actually your response was irrelevant, proceeding with last trial...\n ");
 	printf("Type in double format, your credit card number followed by verification code\n" );
-	scanf("%f", &f);
+	//scanf("%f", &f);
 	printf("\nYour fake card data was: %f\n\n", f);
 	reset_vect(vec);
 }

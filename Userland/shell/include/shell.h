@@ -21,12 +21,12 @@ int parse_command(char*);
 void clean_buffer(void);
 void prnt_welcome_msg(void);
 char** get_arguments(char*, int*);
-void clean_buffer(void);
 void prnt_welcome_msg(void);
 int get_cmd_index(char *);
 cmd_entry* get_command_table(void);
 void print_commands(void);
-int get_cmd_count();
+int get_cmd_count(void);
+//void initialize_cmd_table(void);
 
 
 #endif
