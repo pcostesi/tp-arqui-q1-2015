@@ -1,7 +1,7 @@
 #include <command.h>
 #include <string.h>
 
-
+/*
 void echo(char** args, int argc)
 {
 	int i;

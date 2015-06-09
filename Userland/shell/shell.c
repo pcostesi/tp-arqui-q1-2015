@@ -4,11 +4,12 @@
 #include <string.h>
 #include <command.h>
 
-
+/*
 char shell_buffer[SHELL_BUFFER_SIZE];
 int curr_pos =0;
 
 int cmd_count = 9; /****Must update with each cmd inser/delete****/
+/*
 cmd_entry cmd_table [] =
 {
 	{"echo", ECHO_HELP, echo},
@@ -142,3 +143,4 @@ void prnt_welcome_msg()
  {
 	printf(WELCOME_MSG);
 }
+*/
