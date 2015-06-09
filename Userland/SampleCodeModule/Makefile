@@ -1,6 +1,6 @@
 include ../Makefile.inc
 
-MODULE=10-sampleCodeModule.bin
+MODULE=40-sampleCodeModule.bin
 MODULE.O=sampleCodeModule.o
 SOURCES=$(wildcard *.c)
 

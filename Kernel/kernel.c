@@ -18,11 +18,12 @@ extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
 
-static void * shellModuleAddress = (void*)0x40000;
-static void * sampleDataModuleAddress = (void*)0x60000;
-static void * sampleCodeModuleAddress = (void*)0x80000;
+static void * shellModuleAddress = (void*)0x60000;
+static void * sampleDataModuleAddress = (void*)0x50000;
+static void * sampleCodeModuleAddress = (void*)0x40000;
+int timer = 0;
 
-typedef int (*EntryPoint)();
+typedef int (*EntryPoint)(unsigned int pcount, char * pgname[], void * pgptrs[]);
 
 void clearBSS(void * bssAddress, uint64_t bssSize)
 {
@@ -40,16 +41,19 @@ void * getStackBase()
 
 void * initializeKernelBinary()
 {
+	/* THIS HAS TO BE IN THE SAME ORDER THE PACKER PACKS IT OR
+	 * IT BREAKS, LIKE, *REALLY* BAD.
+	 */
 	void * moduleAddresses[] = {
-	    shellModuleAddress,
+	    sampleCodeModuleAddress,
 	    sampleDataModuleAddress,
-	    sampleCodeModuleAddress
+	    shellModuleAddress
 	};
 
 	char * moduleNames[] = {
-		"shell",
-		"sampleDataModule",
-		"sampleCodeModule"
+	    "sampleCodeModule",
+	    "sampleDataModule",
+	    "shellModule"
 	};
 
 
@@ -89,13 +93,35 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
+void wake_up(void)
+{
+	syscall_wake();
+	timer = 0;
+}
+
+void pit_irq(int irq)
+{
+	if (timer < 100) {
+		timer++;
+	} else {
+		syscall_pause();
+	}
+}
+
+void kbrd_irq_with_activity(int irq)
+{
+	wake_up();
+	kbrd_irq(irq);
+}
+
 int main()
 {	
 	/* driver initialization */
 	/* set up IDTs & int80h */
 
 	install_syscall_handler((IntSysHandler) &int80h);
-	install_hw_handler((IntHwHandler) &kbrd_irq, INT_KEYB);
+	install_hw_handler((IntHwHandler) &kbrd_irq_with_activity, INT_KEYB);
+	install_hw_handler((IntHwHandler) &pit_irq, INT_PIT);
 	install_interrupts();
 
 	kbrd_install();
@@ -130,18 +156,20 @@ int main()
 	ncPrint("[Finished]");
 	*/
 	void * moduleAddresses[] = {
-	    shellModuleAddress,
+	    sampleCodeModuleAddress,
 	    sampleDataModuleAddress,
-	    sampleCodeModuleAddress
+	    shellModuleAddress
 	};
 
 	char * moduleNames[] = {
-		"shell",
-		"sampleDataModule",
-		"sampleCodeModule"
+	    "sampleCodeModule",
+	    "sampleDataModule",
+	    "shellModule"
 	};
-    ((EntryPoint)shellModuleAddress)(sizeof(moduleNames) / sizeof(char *), moduleNames, moduleAddresses);
+
+	uint8_t modules = sizeof(moduleNames) / sizeof(char *);
+    ((EntryPoint)shellModuleAddress)(modules, moduleNames, moduleAddresses);
+
     vid_print("\nHalting", 8);
-	while (1);
 	return 0;
 }

@@ -15,7 +15,7 @@ shell:
 	@echo "Shell built"
 
 sampleDataModule:
-	@printf "This is sample data." >> 20-SampleDataModule.bin && dd if=/dev/zero bs=1 count=1 >> SampleDataModule.bin
+	@printf "This is sample data." >> 50-SampleDataModule.bin && dd if=/dev/zero bs=1 count=1 >> SampleDataModule.bin
 	@echo "Sample Data Module built"
 
 clean:

@@ -10,6 +10,7 @@ int syscall_read(unsigned int fd, char * buf, unsigned int size);
 int syscall_ioctl(unsigned int fd, unsigned long request, void * params);
 void syscall_pause(void);
 void syscall_wake(void);
+void syscall_halt(void);
 
 uint64_t int80h(uint64_t
  sysno, uint64_t
