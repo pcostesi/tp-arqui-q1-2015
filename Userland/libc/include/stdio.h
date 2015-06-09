@@ -5,7 +5,7 @@
 #define STDOUT 	1
 #define STDERR 	2
 #define STDRAW 	3
-
+#define SCANF_MAX_STR_BUFFER 128
 #include <stdarg.h>
 
 /* The freestanding headers are: <float.h>, <iso646.h>, <limits.h>, <stdalign.h>,
