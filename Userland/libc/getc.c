@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <libc.h>
-#include <string.h>
 
 int fgetc(int fd)
 {
 	char c;
-	write(fd, &c, 1);
+	read(fd, &c, 1);
 	return c;
 }
 
@@ -21,7 +20,13 @@ int fgetsn(int fd, char * c, int n)
 
 int fgets(int fd, char * c, unsigned int n)
 {
-	return read(fd, c, n);
+	char buffer;
+	char idx = 0;
+	while (idx < n && (buffer = fgetc(fd) != '\n')) {
+		*c++ = buffer;
+		idx++;
+	}
+	return idx;
 }
 
 int gets(char * c, unsigned int n)
