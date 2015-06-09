@@ -13,7 +13,14 @@
 extern void _halt(void);
 
 static char video_dormant = 0;
-static enum VID_COLOR colors[] = {GRAY, BLACK, RED, BLACK};
+static enum VID_COLOR colors[] = {LIGHT_GRAY, BLACK, RED, BLACK};
+
+void syscall_halt(void)
+{
+	vid_clr();
+	vid_print("\n\tHalted X(", 11);
+	_halt();
+}
 
 void syscall_pause(void)
 {
@@ -126,9 +133,7 @@ uint64_t int80h(uint64_t sysno, uint64_t RDI, uint64_t RSI, uint64_t RDX, uint64
 		break;
 
 		case 48: /* sys_shutdown */
-		vid_clr();
-		vid_print("\n\tHalted X(", 11);
-		_halt();
+		syscall_halt();
 		break;
 
 		case 42: /* sys_towel */

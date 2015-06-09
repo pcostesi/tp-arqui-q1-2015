@@ -1,15 +1,12 @@
 include ../Makefile.inc
 
-MODULE=00-shell.bin
+MODULE=60-shell.bin
 ASMSOURCES=$(wildcard *.asm)
 CSOURCES=$(wildcard *.c)
 COBJECTS=$(CSOURCES:.c=.o)
 ASMOBJECTS=$(ASMSOURCES:.asm=.o)
 
 all: $(MODULE)
-	echo
-	echo "Building shell"
-	echo
 
 %.o:	%.c
 	$(GCC) $(GCCFLAGS) -c $< -o $@

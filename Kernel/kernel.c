@@ -18,9 +18,9 @@ extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
 
-static void * shellModuleAddress = (void*)0x40000;
-static void * sampleDataModuleAddress = (void*)0x60000;
-static void * sampleCodeModuleAddress = (void*)0x80000;
+static void * shellModuleAddress = (void*)0x60000;
+static void * sampleDataModuleAddress = (void*)0x50000;
+static void * sampleCodeModuleAddress = (void*)0x40000;
 int timer = 0;
 
 typedef int (*EntryPoint)(unsigned int pcount, char * pgname[], void * pgptrs[]);
@@ -41,16 +41,19 @@ void * getStackBase()
 
 void * initializeKernelBinary()
 {
+	/* THIS HAS TO BE IN THE SAME ORDER THE PACKER PACKS IT OR
+	 * IT BREAKS, LIKE, *REALLY* BAD.
+	 */
 	void * moduleAddresses[] = {
-	    shellModuleAddress,
+	    sampleCodeModuleAddress,
 	    sampleDataModuleAddress,
-	    sampleCodeModuleAddress
+	    shellModuleAddress
 	};
 
 	char * moduleNames[] = {
-		"shell",
-		"sampleDataModule",
-		"sampleCodeModule"
+	    "sampleCodeModule",
+	    "sampleDataModule",
+	    "shellModule"
 	};
 
 
@@ -153,21 +156,20 @@ int main()
 	ncPrint("[Finished]");
 	*/
 	void * moduleAddresses[] = {
-	    shellModuleAddress,
+	    sampleCodeModuleAddress,
 	    sampleDataModuleAddress,
-	    sampleCodeModuleAddress
+	    shellModuleAddress
 	};
 
 	char * moduleNames[] = {
-		"shell",
-		"sampleDataModule",
-		"sampleCodeModule"
+	    "sampleCodeModule",
+	    "sampleDataModule",
+	    "shellModule"
 	};
 
 	uint8_t modules = sizeof(moduleNames) / sizeof(char *);
     ((EntryPoint)shellModuleAddress)(modules, moduleNames, moduleAddresses);
 
     vid_print("\nHalting", 8);
-	while (1);
 	return 0;
 }
