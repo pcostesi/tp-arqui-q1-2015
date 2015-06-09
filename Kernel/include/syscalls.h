@@ -7,6 +7,7 @@
 
 int syscall_write(unsigned int fd, char *str, unsigned int size);
 int syscall_read(unsigned int fd, char * buf, unsigned int size);
+int syscall_ioctl(unsigned int fd, unsigned long request, void * params);
 void syscall_pause(void);
 void syscall_wake(void);
 

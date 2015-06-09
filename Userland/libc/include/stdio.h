@@ -23,8 +23,12 @@ int vfprintf(int fd, char * fmt, va_list ap);
 int fprintf(int fd, char *fmt, ...);
 int printf(char *fmt, ...);
 
+
+int fgetc(int fd);
 int getc(void);
-int gets(char *);
+int fgetsn(int fd, char * c, int n);
+int fgets(int fd, char * c, unsigned int n);
+int gets(char * c, unsigned int n);
 
 int scanf(char *fmt, ...);
 int fscanf(int fd, char *fmt, ...);
