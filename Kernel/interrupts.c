@@ -100,11 +100,11 @@ uint64_t sys_handler(uint64_t RDI, uint64_t RSI, uint64_t RDX, uint64_t RCX, uin
 static inline int _irq_get_hw_index(int irq)
 {
 	if ((irq & IDT_MASTER)) {
-		return IDT_MASTER - irq;
+		return irq - IDT_MASTER;
 	}
 
 	if ((irq & IDT_SLAVE)) {
-		return IDT_SLAVE - irq;
+		return irq - IDT_SLAVE;
 	}
 
 	return 0;
@@ -119,7 +119,7 @@ void irq_handler(int irq)
 	handler = handlers[index];
 
 	if (handler == (IntHwHandler) 0) return;
-	handler(irq);
+	handler(index);
 }
 
 static void install_IDT_entry(struct IDT_Entry * table, unsigned int idx,
