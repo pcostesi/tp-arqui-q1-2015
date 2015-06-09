@@ -77,6 +77,11 @@ void vid_putc(const char c)
 
 void * vid_cursor(const unsigned int row, const unsigned int col)
 {
+	return vid_raw_cursor(row, col * 2);
+}
+
+void * vid_raw_cursor(const unsigned int row, const unsigned int col)
+{
 	void * old = (void *) _vid_cursor;
 	_vid_set_cursor(row, col);
 	return old;

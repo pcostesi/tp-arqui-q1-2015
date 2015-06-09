@@ -28,6 +28,7 @@ enum VID_COLOR
 
 void vid_putc(const char c);
 void * vid_cursor(const unsigned int row, const unsigned int col);
+void * vid_raw_cursor(const unsigned int row, const unsigned int col);
 void vid_raw_putc(const char c, const enum VID_COLOR);
 char vid_color(const enum VID_COLOR, const enum VID_COLOR);
 void vid_print(const char * str, unsigned int n);
