@@ -18,8 +18,11 @@ extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
 
-static void * const sampleCodeModuleAddress = (void*)0x40000;
-static void * const sampleDataModuleAddress = (void*)0x50000;
+static void * shellModuleAddress = (void*)0x40000;
+static void * sampleDataModuleAddress = (void*)0x60000;
+static void * sampleCodeModuleAddress = (void*)0x80000;
+
+static uint8_t moduleCount = 0;
 
 typedef int (*EntryPoint)();
 
@@ -39,18 +42,27 @@ void * getStackBase()
 
 void * initializeKernelBinary()
 {
+	void * moduleAddresses[] = {
+	    shellModuleAddress,
+	    sampleDataModuleAddress,
+	    sampleCodeModuleAddress
+	};
+
+	char * moduleNames[] = {
+		"shell",
+		"sampleDataModule",
+		"sampleCodeModule"
+	};
+
+
 	ncPrint("[x64BareBones]");
 	ncNewline();
 	ncNewline();
 
 	ncPrint("[Loading modules]");
 	ncNewline();
-	void * moduleAddresses[] = {
-		sampleCodeModuleAddress,
-		sampleDataModuleAddress
-	};
 
-	loadModules(&endOfKernelBinary, moduleAddresses);
+	moduleCount = loadModules(&endOfKernelBinary, moduleAddresses);
 	ncPrint("[Done]");
 	ncNewline();
 	ncNewline();
@@ -101,8 +113,10 @@ int main()
 	ncPrintHex((uint64_t)sampleCodeModuleAddress);
 	ncNewline();
 	*/
+    /*
 	ncPrint("  Calling the sample code module returned: ");
 	ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
+     */
 	/*
 	ncNewline();
 	ncNewline();
@@ -117,8 +131,21 @@ int main()
 
 	ncPrint("[Finished]");
 	*/
-	
+	void * moduleAddresses[] = {
+	    shellModuleAddress,
+	    sampleDataModuleAddress,
+	    sampleCodeModuleAddress
+	};
 
+	char * moduleNames[] = {
+		"shell",
+		"sampleDataModule",
+		"sampleCodeModule"
+	};
+
+    ((EntryPoint)shellModuleAddress)(sizeof(moduleNames) / sizeof(char *), moduleNames, moduleAddresses);
+
+    vid_print("\nHalting", 8);
 	while (1);
 	return 0;
 }

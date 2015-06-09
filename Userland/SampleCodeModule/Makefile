@@ -1,6 +1,6 @@
 include ../Makefile.inc
 
-MODULE=sampleCodeModule.bin
+MODULE=10-sampleCodeModule.bin
 MODULE.O=sampleCodeModule.o
 SOURCES=$(wildcard *.c)
 
@@ -14,7 +14,7 @@ $(MODULE.O): $(SOURCES)
 
 
 $(MODULE):	$(MODULE.O)
-	$(LD) -T sampleCodeModule.ld $(CRT0) $(MODULE.O) $(LIBC) -o ../$(MODULE)
+	$(LD) -T linkerScript.ld $(CRT0) $(MODULE.O) $(LIBC) -o ../$(MODULE)
 
 clean:
 	rm -rf *.o
