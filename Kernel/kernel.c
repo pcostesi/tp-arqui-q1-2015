@@ -22,7 +22,7 @@ static void * shellModuleAddress = (void*)0x40000;
 static void * sampleDataModuleAddress = (void*)0x60000;
 static void * sampleCodeModuleAddress = (void*)0x80000;
 
-typedef int (*EntryPoint)();
+typedef int (*EntryPoint)(unsigned int pcount, char * pgname[], void * pgptrs[]);
 
 void clearBSS(void * bssAddress, uint64_t bssSize)
 {
@@ -140,7 +140,18 @@ int main()
 		"sampleDataModule",
 		"sampleCodeModule"
 	};
+<<<<<<< HEAD
     ((EntryPoint)shellModuleAddress)(sizeof(moduleNames) / sizeof(char *), moduleNames, moduleAddresses);
+||||||| merged common ancestors
+
+    ((EntryPoint)shellModuleAddress)(sizeof(moduleNames) / sizeof(char *), moduleNames, moduleAddresses);
+
+=======
+
+	uint8_t modules = sizeof(moduleNames) / sizeof(char *);
+    ((EntryPoint)shellModuleAddress)(modules, moduleNames, moduleAddresses);
+
+>>>>>>> add entrypoints
     vid_print("\nHalting", 8);
 	while (1);
 	return 0;
