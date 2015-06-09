@@ -39,3 +39,17 @@ int strlen(char * s)
      s[i] = '\0';
      reverse(s);
  }
+
+
+//Returns 1 if s1 is substring of s2, else it returns 0
+int substr(char * s1, char *s2)
+ {
+    int i = 0, is_substr = 1;
+    while(is_substr && s1[i] != '\0') {
+        if(s1[i] != s2[i]) {
+            is_substr = 0;
+        }
+        i++;
+    }
+    return is_substr;
+}
