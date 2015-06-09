@@ -22,8 +22,6 @@ static void * shellModuleAddress = (void*)0x40000;
 static void * sampleDataModuleAddress = (void*)0x60000;
 static void * sampleCodeModuleAddress = (void*)0x80000;
 
-static uint8_t moduleCount = 0;
-
 typedef int (*EntryPoint)();
 
 void clearBSS(void * bssAddress, uint64_t bssSize)
@@ -62,7 +60,7 @@ void * initializeKernelBinary()
 	ncPrint("[Loading modules]");
 	ncNewline();
 
-	moduleCount = loadModules(&endOfKernelBinary, moduleAddresses);
+	loadModules(&endOfKernelBinary, moduleAddresses);
 	ncPrint("[Done]");
 	ncNewline();
 	ncNewline();
