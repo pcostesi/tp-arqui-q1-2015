@@ -4,23 +4,23 @@
 #include <string.h>
 #include <command.h>
 
-/*
+
 char shell_buffer[SHELL_BUFFER_SIZE];
 int curr_pos =0;
 
-int cmd_count = 9; /****Must update with each cmd inser/delete****/
-/*
+int cmd_count = 10; /****Must update with each cmd inser/delete****/
 cmd_entry cmd_table [] =
 {
-	{"echo", ECHO_HELP, echo},
-	{"clear", CLEAR_HELP, clear},
-	{"date", DATE_HELP, date},
-	{"time", TIME_HELP, time},
-	{"setdate", SETDATE_HELP, set_date},
-	{"settime", SETTIME_HELP, set_time},
-	{"getchar", GETCHAR_HELP, getchar_cmd},
-	{"printf", PRINTF_HELP, printf_cmd},
-	{"scanf", SCANF_HELP, scanf_cmd}
+	{"echo", ECHO_HELP, &echo},
+	{"clear", CLEAR_HELP, &clear},
+	{"date", DATE_HELP, &date},
+	{"time", TIME_HELP, &time},
+	{"setdate", SETDATE_HELP, &set_date},
+	{"settime", SETTIME_HELP, &set_time},
+	{"getchar", GETCHAR_HELP, &getchar_cmd},
+	{"printf", PRINTF_HELP, &printf_cmd},
+	{"scanf", SCANF_HELP, &scanf_cmd},
+	{"help", HELP_HELP, &help}
 };
 
 void init_shell()
@@ -39,12 +39,6 @@ void update_shell()
 		return;
 	}
 
-	if(curr_pos >= SHELL_BUFFER_SIZE-1)
-	{
-		//sound beep
-		return;
-	}
-
 	if(key == '\n')
 	{
 		printf("\n");
@@ -52,6 +46,14 @@ void update_shell()
 		printf(SHELL_TEXT);
 		void cleanBuffer();
 	}
+
+	if(curr_pos >= SHELL_BUFFER_SIZE-2)
+	{
+		//sound beep
+		return;
+	}
+
+
 	else if (key == '\b')
 	{
 		if(curr_pos > 0){
@@ -62,9 +64,8 @@ void update_shell()
 	}
 	else 
 	{
-		printf(key);
+		putc(key);
 		shell_buffer[curr_pos] = key;
-		shell_buffer[curr_pos] = '\0';
 		curr_pos++;
 	}
 }
@@ -75,13 +76,14 @@ void excecute_command(char* buffer)
 	int cmd_no = parse_command(buffer);
 	if( cmd_no == -1)
 	{
-		//print error
+		printf(EXCECUTE_COMMAND_ERROR);
+		print_commands();
 		return;
 	}
 	int argc, cmd_len;
 	cmd_len = strlen(cmd_table[cmd_no].name);
 	char** args = get_arguments(buffer+cmd_len, &argc);
-	cmd_table[cmd_no].func(argc, args);
+	cmd_table[cmd_no].func(args, argc);
 }
 
 int parse_command(char* buffer)
@@ -100,7 +102,7 @@ int parse_command(char* buffer)
 		i++;
 	}
 	i = strlen(cmd_table[cmd_no].name);
-	char next = (buffer+i);
+	char next = buffer[i];
 	if(next == ' ' || next == '\0'){
 		return cmd_no;
 	}
@@ -143,4 +145,38 @@ void prnt_welcome_msg()
  {
 	printf(WELCOME_MSG);
 }
-*/
+
+//Returns the index of the command in the command table, if such command does not exist, returns -1
+int get_cmd_index(char * cmd_name) 
+{
+	int i;
+	for( i=0; i < cmd_count; i++) {
+		if (strcmp(cmd_name, cmd_table[i].name) == 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+
+cmd_entry* get_command_table()
+{
+	return cmd_table;
+}
+
+
+
+void print_commands()
+{
+	int i;
+	for( i=0; i < cmd_count; i++)
+	{
+		printf("\t%s\n", cmd_table[i].name);
+	}
+
+}
+
+int get_cmd_count()
+{
+	return cmd_count;
+}

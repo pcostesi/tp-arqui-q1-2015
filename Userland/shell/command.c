@@ -1,7 +1,26 @@
 #include <command.h>
 #include <string.h>
+#include <shell.h>
+#include <stdio.h>
 
-/*
+
+void help(char *argv[], int argc) 
+{
+	int cmd_index;
+	cmd_entry* table = get_command_table();
+	if (argc == 1) {
+		cmd_index = get_cmd_index(argv[0]);
+		if (cmd_index != -1) {
+			printf("\n%s\n", table[cmd_index].help);
+		} else {
+			help_error_print(table);
+		}
+	} else if (argc == 0) {
+		help_error_print(table);
+	}
+}
+
+
 void echo(char** args, int argc)
 {
 	int i;
@@ -70,7 +89,6 @@ void set_time(char** args, int argc)
 //Receives input string, parses it for a date, returns 1 if valid, 0 if not
 int parse_date(char* date_string, int* days, int*months, int*years)
 {
-	int valid = 1, i=0;
 	int len =0;
 	len = strlen(date_string);
 	if(len !=10)
@@ -105,8 +123,7 @@ int parse_date(char* date_string, int* days, int*months, int*years)
 }
 
 int parse_time(char* time_string, int* seconds, int*minutes, int*hours)
-{
-	int valid = 1, i=0;
+{	
 	int len =0;
 	len = strlen(time_string);
 	if(len !=8)
@@ -135,11 +152,7 @@ int parse_time(char* time_string, int* seconds, int*minutes, int*hours)
 	*seconds = (time_string[0]-'0')*10 + (time_string[1]-'0');
 	*minutes = (time_string[3]-'0')*10 + (time_string[4]-'0');
 	*hours = (time_string[6]-'0')*10 + (time_string[7]-'0');
-	if(!valid_time(seconds, minutes, hours))
-	{
-		printf(SETTIME_FORMAT_ERROR);
-		return;
-	}
+	return valid_time(*seconds, *minutes, *hours);
 }
 
 
@@ -187,14 +200,14 @@ int is_leap_year(int year)
 }
 
 
-int getchar_cmd(int argc, char *argv[]) 
+void getchar_cmd(char *argv[], int argc) 
 {
 	printf("Please type in a character\n");
-	char c = getchar();
+	char c = getc();
 	printf("You pressed: %c\n", c);
 }
 
-int printf_cmd(int argc, char *argv[]) 
+void printf_cmd(char *argv[], int argc) 
 {
 	printf("Testing printf...\n\n");
 	printf("Printing a double: %f\n", 123.456789);
@@ -205,7 +218,7 @@ int printf_cmd(int argc, char *argv[])
 	printf("Printing a single char: %c\n", 'c');
 }
 
-int scanf_cmd(int argc, char *argv[]) 
+void scanf_cmd(char *argv[], int argc) 
 {
 	int n;
 	char vec[50];
@@ -249,4 +262,12 @@ void reset_vect(char vec[])
 
 /*TODO EPIC ASCII STAR*/
 //TODO EVIL MUSIC 
+
+
+void help_error_print()
+{
+	printf("\nYou selected an non existing command, please choose one of the following:\n");
+	print_commands();
+	printf("\nInvoke help as follows: \"help \"command_name\"\"\n");	
+}
 

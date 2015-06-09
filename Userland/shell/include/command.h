@@ -1,5 +1,6 @@
 #ifndef __COMMANDS_H_
 #define __COMMANDS_H_ 1
+#include <shell.h>
 
 
 
@@ -13,6 +14,7 @@
 #define GETCHAR_HELP "Test command for directive board to test getchar() functionality.\n"
 #define PRINTF_HELP "Test command for supreme leaders to test printf() functionality \n"
 #define SCANF_HELP "Test command for the High Command to test scanf() functionality\n"
+#define HELP_HELP "Displays information about following command, syntaxt: \"help \"command_name\"\"\n "
 
 //Error messages
 #define SETDATE_ERROR_INVALID_FORMAT "Invalid date inserted, please respect dd/mm/yyyy format & insert a valid date.\n"
@@ -33,10 +35,12 @@ int is_num(char);
 int valid_time(int, int, int);
 int valid_date(int, int, int);
 int is_leap_year(int);
-int getchar_cmd(int, char *argv[]);
-int printf_cmd(int, char *argv[]);
-int scanf_cmd(int argc, char *argv[]);
+void getchar_cmd(char**, int);
+void printf_cmd(char**, int);
+void scanf_cmd(char**, int);
 void reset_vect(char vec[]);
+void help_error_print();
+void help(char**, int); 
 
 
 
