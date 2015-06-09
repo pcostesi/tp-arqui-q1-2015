@@ -20,6 +20,7 @@ static const uint64_t PageSize = 0x1000;
 
 static void * const sampleCodeModuleAddress = (void*)0x40000;
 static void * const sampleDataModuleAddress = (void*)0x50000;
+int timer = 0;
 
 typedef int (*EntryPoint)();
 
@@ -79,13 +80,35 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
+void wake_up(void)
+{
+	syscall_wake();
+	timer = 0;
+}
+
+void pit_irq(int irq)
+{
+	if (timer < 100) {
+		timer++;
+	} else {
+		syscall_pause();
+	}
+}
+
+void kbrd_irq_with_activity(int irq)
+{
+	wake_up();
+	kbrd_irq(irq);
+}
+
 int main()
 {	
 	/* driver initialization */
 	/* set up IDTs & int80h */
 
 	install_syscall_handler((IntSysHandler) &int80h);
-	install_hw_handler((IntHwHandler) &kbrd_irq, INT_KEYB);
+	install_hw_handler((IntHwHandler) &kbrd_irq_with_activity, INT_KEYB);
+	install_hw_handler((IntHwHandler) &pit_irq, INT_PIT);
 	install_interrupts();
 
 	kbrd_install();
