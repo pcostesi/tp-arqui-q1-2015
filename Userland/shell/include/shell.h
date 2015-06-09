@@ -2,11 +2,8 @@
 #define __SHELL_H_ 1
 #include <command.h>
 
-#define SHELL_TEXT "Shell> "
-#define SHELL_BUFFER_SIZE 512
-#define WELCOME_MSG "Welcome to Barely Compiles OS \n"
-#define MAX_ARG_DIM 32
-#define EXCECUTE_COMMAND_ERROR "We are sorry, command does not exist, select one of available commands:"
+//#define SHELL_BUFFER_SIZE 128
+//#define MAX_ARG_DIM 32
 
 typedef struct cmd_entry {
 	char* name;
@@ -26,7 +23,8 @@ int get_cmd_index(char *);
 cmd_entry* get_command_table(void);
 void print_commands(void);
 int get_cmd_count(void);
-//void initialize_cmd_table(void);
+void initialize_cmd_table(void);
+void print_shell_text();
 
 
 #endif

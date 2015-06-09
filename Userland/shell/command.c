@@ -58,11 +58,15 @@ void set_date(char** args, int argc)
 {
 	int days, months, years;
 	if(argc <1){
-		printf("%s \n", SETDATE_ERROR_NO_ARGUMENTS);
+		char err[] ="Invalid date inserted, please respect dd/mm/yyyy format & insert a valid date.\n";
+		char fmt[]= "%s";
+		printf(fmt, err);
 		return;
 	}
 	if(!parse_date(args[0], &days, &months, &years)){
-		printf("%s \n", SETDATE_ERROR_INVALID_FORMAT);
+		char err[] ="Invalid date inserted, please respect dd/mm/yyyy format & insert a valid date.\n";
+		char fmt[]= "%s";
+		printf(fmt, err);
 		return;
 
 	}
@@ -74,12 +78,16 @@ void set_time(char** args, int argc)
 	int seconds, minutes, hours;
 	if(argc < 1)
 	{
-		printf(SET_TIME_NO_ARGUMENT);
+		char err[] ="No arguments were sent to command settime format musut be ss:mm:hh \n";
+		char fmt[]= "%s";
+		printf(fmt, err);
 		return;
 	}	
 	if(!parse_time(args[0], &seconds, &minutes, &hours))
 	{
-		printf(SETTIME_FORMAT_ERROR);
+		char err[] ="Invalid date inserted, please respect ss:mm:hh format & insert a valid date.\n";
+		char fmt[]= "%s";
+		printf(fmt, err);
 		return;
 	}
 	//TODO SET SYSTEM TIME
