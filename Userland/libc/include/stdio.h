@@ -5,7 +5,7 @@
 #define STDOUT 	1
 #define STDERR 	2
 #define STDRAW 	3
-
+#define SCANF_MAX_STR_BUFFER 128
 #include <stdarg.h>
 
 /* The freestanding headers are: <float.h>, <iso646.h>, <limits.h>, <stdalign.h>,
@@ -32,6 +32,6 @@ int gets(char * c, unsigned int n);
 
 int scanf(char *fmt, ...);
 int fscanf(int fd, char *fmt, ...);
-int vfscanf(int fd, char *fmt, ...);
+int vfscanf(int fd, char *fmt, va_list ap);
 
 #endif
