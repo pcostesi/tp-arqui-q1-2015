@@ -14,13 +14,12 @@ int main(unsigned int pcount, char * pgname[], void * pgptrs[]) {
 
 	
 	init_shell();
-	int i = 2;
 	putc('\n');
 	putc('a');
 	print_commands();
-	//init_shell();
-	while(i-->0){
-		putc('a');
+	init_shell();
+	while(1){
+		update_shell();
 	}
 	putc('a');
 	return 0;

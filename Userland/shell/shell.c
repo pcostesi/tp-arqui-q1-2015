@@ -64,6 +64,8 @@ void update_shell()
 	{
 		if(curr_pos > 0){
 			putc('\b');
+			putc(' ');
+			putc('\b');
 			curr_pos--;
 			shell_buffer[curr_pos] = '\0';
 		}
@@ -193,7 +195,8 @@ int get_cmd_count()
 
 void initialize_cmd_table()
 {
-	cmd_table[0].name = "echo";
+	char name[] = "echo";
+	cmd_table[0].name = name;
 	cmd_table[1].name = "clear";
 	cmd_table[2].name = "date";
 	cmd_table[3].name = "time";

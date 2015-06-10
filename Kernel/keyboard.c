@@ -217,10 +217,10 @@ char kbrd_key_to_ascii (enum KEYCODE code)
 						key = KEY_AT;
 						break;
 					case '3':
-						key = KEY_EXCLAMATION;
+						key = KEY_HASH;
 						break;
 					case '4':
-						key = KEY_HASH;
+						key = KEY_EURO;
 						break;
 					case '5':
 						key = KEY_PERCENT;
