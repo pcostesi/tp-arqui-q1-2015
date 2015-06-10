@@ -8,9 +8,8 @@
 char shell_buffer[128/*SHELL_BUFFER_SIZE*/];
 int curr_pos =0;
 
-int cmd_count = 10; /****Must update with each cmd inser/delete****/
-
-cmd_entry cmd_table[10];
+cmd_entry cmd_table[11];
+int cmd_count = sizeof(cmd_table);
 
 void init_shell()
 {
@@ -207,6 +206,7 @@ void initialize_cmd_table()
 	cmd_table[7].name = "printf";
 	cmd_table[8].name = "scanf";
 	cmd_table[9].name = "help";
+	cmd_table[9].name = "halt";
 	
 	cmd_table[0].help = "Echo repeats the input string following echo statement \n example: \"echo Hello I am using echo\"";
 	cmd_table[1].help = "Clears the screen, uses no arguments, therefore will ignore any ones received\n";
@@ -218,6 +218,7 @@ void initialize_cmd_table()
 	cmd_table[7].help = "Test command for supreme leaders to test printf() functionality \n";
 	cmd_table[8].help = "Test command for the High Command to test scanf() functionality\n";
 	cmd_table[9].help = "Displays information about following command, syntaxt: \"help \"command_name\"\"\n";
+	cmd_table[9].help = "Halts the system.\n";
 
 	
 	cmd_table[0].func = &echo;
@@ -230,4 +231,5 @@ void initialize_cmd_table()
 	cmd_table[7].func = &printf_cmd;
 	cmd_table[8].func = &scanf_cmd;
 	cmd_table[9].func = &help;
+	cmd_table[9].func = &halt_system;
 }

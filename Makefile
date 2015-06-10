@@ -15,10 +15,10 @@ userland:
 image: kernel bootloader userland toolchain
 	cd Image; make all
 
-run:	image
+run:	clean image
 	bash run.sh
 
-raw:	image
+raw:	clean image
 	bash run.sh img
 
 clean:

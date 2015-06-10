@@ -297,6 +297,11 @@ void reset_vect(char vec[])
 /*TODO EPIC ASCII STAR*/
 //TODO EVIL MUSIC 
 
+ 
+void halt_system(void)
+{
+	halt();
+}
 
 void help_error_print()
 {
