@@ -19,6 +19,8 @@ void init_shell()
 	initialize_cmd_table(); 
 	prnt_welcome_msg();
 	print_shell_text();
+	print_commands();
+
 
 }
 
@@ -44,7 +46,6 @@ void update_shell()
 	{
 		return;
 	}
-
 	if(key == '\n')
 	{
 		putc('\n');
@@ -52,7 +53,6 @@ void update_shell()
 		print_shell_text();
 		clean_buffer();
 	}
-
 	if(curr_pos >= 128/*SHELL_BUFFER_SIZE*/-2)
 	{
 		//sound beep
@@ -195,28 +195,50 @@ int get_cmd_count()
 
 void initialize_cmd_table()
 {
-	char name[] = "echo";
-	cmd_table[0].name = name;
-	cmd_table[1].name = "clear";
-	cmd_table[2].name = "date";
-	cmd_table[3].name = "time";
-	cmd_table[4].name = "setdate";
-	cmd_table[5].name = "settime";
-	cmd_table[6].name = "getchar";
-	cmd_table[7].name = "printf";
-	cmd_table[8].name = "scanf";
-	cmd_table[9].name = "help";
-	
-	cmd_table[0].help = "Echo repeats the input string following echo statement \n example: \"echo Hello I am using echo\"";
-	cmd_table[1].help = "Clears the screen, uses no arguments, therefore will ignore any ones received\n";
-	cmd_table[2].help = "Prints current system date on screen\n";
-	cmd_table[3].help = "Prints current system time on screen\n";
-	cmd_table[4].help = "Sets system date, format must be dd/mm/yyyy.\nExample: \"setdate 05/05/2015\"\n";
-	cmd_table[5].help = "Sets system time, format must be ss:mm:hh.\n Example: \" settime 23:23:23\"\n";
-	cmd_table[6].help = "Test command for directive board to test getchar() functionality.\n";
-	cmd_table[7].help = "Test command for supreme leaders to test printf() functionality \n";
-	cmd_table[8].help = "Test command for the High Command to test scanf() functionality\n";
-	cmd_table[9].help = "Displays information about following command, syntaxt: \"help \"command_name\"\"\n";
+
+	char name0[] = "echo";
+	char name1[] = "clear";
+	char name2[] = "date";
+	char name3[] = "time";
+	char name4[] = "setdate";
+	char name5[] = "settime";
+	char name6[] = "getchar";
+	char name7[] = "printf";
+	char name8[] = "scanf";
+	char name9[] = "help";
+
+	cmd_table[0].name = name0;
+	cmd_table[1].name = name1;
+	cmd_table[2].name = name2;
+	cmd_table[3].name = name3;
+	cmd_table[4].name = name4;
+	cmd_table[5].name = name5;
+	cmd_table[6].name = name6;
+	cmd_table[7].name = name7;
+	cmd_table[8].name = name8;
+	cmd_table[9].name = name9;
+
+	char help0[] =	"Echo repeats the input string following echo statement \n example: \"echo Hello I am using echo\"";
+	char help1[] =	"Clears the screen, uses no arguments, therefore will ignore any ones received\n";
+	char help2[] =	"Prints current system date on screen\n";
+	char help3[] =	"Prints current system time on screen\n";
+	char help4[] =	"Sets system date, format must be dd/mm/yyyy.\nExample: \"setdate 05/05/2015\"\n";
+	char help5[] =	"Sets system time, format must be ss:mm:hh.\n Example: \" settime 23:23:23\"\n";
+	char help6[] =	"Test command for directive board to test getchar() functionality.\n";
+	char help7[] =	"Test command for supreme leaders to test printf() functionality \n";
+	char help8[] =	"Test command for the High Command to test scanf() functionality\n";
+	char help9[] =	"Displays information about following command, syntaxt: \"help \"command_name\"\"\n";
+
+	cmd_table[0].help = help0; 
+	cmd_table[1].help = help1; 
+	cmd_table[2].help = help2; 
+	cmd_table[3].help = help3; 
+	cmd_table[4].help = help4; 
+	cmd_table[5].help = help5; 
+	cmd_table[6].help = help6; 
+	cmd_table[7].help = help7; 
+	cmd_table[8].help = help8; 
+	cmd_table[9].help = help9; 
 
 	
 	cmd_table[0].func = &echo;
