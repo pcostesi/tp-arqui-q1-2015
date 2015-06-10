@@ -9,6 +9,8 @@
 #include <rtc-driver.h>
 #include <syscalls.h>
 
+#define SCRSVR_SEC 10
+
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -101,7 +103,7 @@ void wake_up(void)
 
 void pit_irq(int irq)
 {
-	if (timer < 100) {
+	if (timer < SCRSVR_SEC * (1000 / 55)) {
 		timer++;
 	} else {
 		syscall_pause();
