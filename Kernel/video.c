@@ -57,8 +57,9 @@ void vid_print(const char * str, unsigned int n)
 
 void vid_clr() {
 	int i;
+	_vid_set_cursor(0, 0);
 	for (i = 0; i < COLS * ROWS ; i++) {
-		*_vid_cursor++ = (char) 0;
+		*_vid_cursor++ = (char) ' ';
 		*_vid_cursor++ = (char) 0;
 	}
 	_vid_set_cursor(0, 0);

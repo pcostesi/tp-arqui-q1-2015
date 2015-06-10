@@ -93,9 +93,11 @@ int main()
 
 	/* these are the PUBLICLY ACCESSIBLE modules */
 	void * moduleAddresses[] = {
+		tplModuleAddress
 	};
 
 	char * moduleNames[] = {
+		"template"
 	};
 
 	/* call shell */

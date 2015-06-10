@@ -20,4 +20,5 @@ void scanf_cmd(char**, int);
 void reset_vect(char vec[]);
 void help_error_print();
 void help(char**, int); 
+void halt_system(void);
 #endif
