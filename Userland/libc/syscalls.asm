@@ -52,5 +52,5 @@ _int80h pause, 34
 _int80h halt, 48
 _int80h shutdown, 48
 _int80h towel, 32
-_int80h gettime, 300
-_int80h settime, 301
+_int80h gettime, 200
+_int80h settime, 201

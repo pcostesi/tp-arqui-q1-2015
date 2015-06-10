@@ -5,18 +5,18 @@
 
 struct rtc_time 
 {
-	int sec;
-	int min;
-	int hour;
-	int mday;
-	int mon;
-	int year;
+	unsigned char sec;
+	unsigned char min;
+	unsigned char hour;
+	unsigned char day;
+	unsigned char mon;
+	unsigned char year;
 };
 
 void syscall_get_time(struct rtc_time *);
 void syscall_set_time(struct rtc_time *);
-int isleapyear(int year);
-int valid_time(int sec, int min, int hour);
-int valid_date(int year,int month,int day);
+int isleapyear(unsigned char year);
+int valid_time(unsigned char sec, unsigned char min, unsigned char hour);
+int valid_date(unsigned char year, unsigned char month, unsigned char day);
 
 #endif

@@ -4,12 +4,12 @@
 /* common structs */
 struct rtc_time 
 {
-	int sec;
-	int min;
-	int hour;
-	int mday;
-	int mon;
-	int year;
+	unsigned char sec;
+	unsigned char min;
+	unsigned char hour;
+	unsigned char day;
+	unsigned char mon;
+	unsigned char year;
 };
 
 /* syscalls */
