@@ -2,6 +2,7 @@
 #include <string.h>
 #include <shell.h>
 #include <stdio.h>
+#include <libc.h>
 
 
 void help(char *argv[], int argc) 
@@ -52,8 +53,17 @@ void date(char** args, int argc)
 void time(char** args, int argc)
 {
 	//TODO int time params;
-	//TODO get_time(); //implementation pending
-	printf("print params");
+	//TODO gettime(); //implementation pending
+	struct rtc_time time_struct;
+	gettime(&time_struct);
+	printf("%d/%d/%d %d:%d:%d\n",
+		time_struct.day,
+		time_struct.mon,
+		time_struct.year,
+		time_struct.hour,
+		time_struct.min,
+		time_struct.sec
+	);
 }
 
 void set_date(char** args, int argc)

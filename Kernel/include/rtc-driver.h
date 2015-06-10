@@ -39,7 +39,7 @@ unsigned get_rtc_year();
 unsigned get_rtc_crt(enum RTC_STATS_MASK cmd);
 
 //Setters
-void set_rtc_seconds(uint8_t  seconds);
+void set_rtc_seconds(uint8_t seconds);
 void set_rtc_minutes(uint8_t minutes);
 void set_rtc_hours(uint8_t hours);
 void set_rtc_day_of_week(uint8_t dow);
