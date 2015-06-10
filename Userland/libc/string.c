@@ -39,3 +39,32 @@ int strlen(char * s)
      s[i] = '\0';
      reverse(s);
  }
+
+
+//Returns 1 if s1 is substring of s2, else it returns 0
+int substr(char * s1, char *s2)
+ {
+    int i = 0, is_substr = 1;
+    while(is_substr && s1[i] != '\0') {
+        if(s1[i] != s2[i]) {
+            is_substr = 0;
+        }
+        i++;
+    }
+    return is_substr;
+}
+
+
+
+int strcmp(char * s1, char * s2)
+{
+    int ret = 0;
+    
+    while(ret == 0 && (*s1 != '\0' || *s2 != '\0')) {
+        ret = *s1 - *s2;
+        s1++;
+        s2++;
+    }
+    
+    return ret;
+}

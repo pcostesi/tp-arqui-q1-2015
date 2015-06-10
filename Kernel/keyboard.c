@@ -110,7 +110,7 @@ static int kbrdscancode_std [] = {
 	KEY_P,			//0x19
 	KEY_LEFTBRACKET,//0x1a
 	KEY_RIGHTBRACKET,//0x1b
-	KEY_RETURN,		//0x1c
+	KEY_ENTER,		//0x1c
 	KEY_LCTRL,		//0x1d
 	KEY_A,			//0x1e
 	KEY_S,			//0x1f
@@ -153,9 +153,15 @@ static int kbrdscancode_std [] = {
 	KEY_F10,		//0x44
 	KEY_KP_NUMLOCK,	//0x45
 	KEY_SCROLLLOCK,	//0x46
-	KEY_HOME,		//0x47
+	KEY_KP_7,		//0x47
 	KEY_KP_8,		//0x48	//keypad up arrow
-	KEY_PAGEUP,		//0x49
+	KEY_KP_9,		//0x49
+	KEY_KP_MINUS,   //0x4a
+	KEY_KP_4,       //0x4b
+	KEY_KP_5,       //0x4c
+	KEY_KP_6,       //0x4d
+	KEY_PLUS,		//0x4e
+	KEY_KP_1,       //0x4f
 	KEY_KP_2,		//0x50	//keypad down arrow
 	KEY_KP_3,		//0x51	//keypad page down
 	KEY_KP_0,		//0x52	//keypad insert key
@@ -164,7 +170,9 @@ static int kbrdscancode_std [] = {
 	KEY_UNKNOWN,	//0x55
 	KEY_UNKNOWN,	//0x56
 	KEY_F11,		//0x57
-	KEY_F12			//0x58
+	KEY_F12,		//0x58
+	KEY_UNKNOWN,	//0x59
+	KEY_ENTER		//ox5a
 };
 
 
@@ -217,10 +225,10 @@ char kbrd_key_to_ascii (enum KEYCODE code)
 						key = KEY_AT;
 						break;
 					case '3':
-						key = KEY_EXCLAMATION;
+						key = KEY_HASH;
 						break;
 					case '4':
-						key = KEY_HASH;
+						key = KEY_EURO;
 						break;
 					case '5':
 						key = KEY_PERCENT;
@@ -243,6 +251,9 @@ char kbrd_key_to_ascii (enum KEYCODE code)
 			{
 
 				switch (key) {
+					case KEY_EQUAL:
+						key = KEY_PLUS;
+						break;
 					case KEY_COMMA:
 						key = KEY_LESS;
 						break;

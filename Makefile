@@ -1,4 +1,4 @@
-all:  toolchain bootloader kernel userland image
+all:  clean toolchain bootloader kernel userland image raw
 
 toolchain:
 	- cd Toolchain; make all
@@ -15,16 +15,16 @@ userland:
 image: kernel bootloader userland toolchain
 	cd Image; make all
 
-run:	clean image
+run:	image
 	bash run.sh
 
-raw:	clean image
+raw:	image
 	bash run.sh img
 
 clean:
 	cd Bootloader; make clean
 	cd Image; make clean
-	cd Kernel; make clean
 	cd Userland; make clean
+	cd Kernel; make clean
 
-.PHONY: bootloader image collections kernel userland all clean toolchain
+.PHONY: clean bootloader image collections kernel userland all toolchain

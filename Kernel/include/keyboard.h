@@ -9,6 +9,7 @@ enum KEYCODE {
 
 // Alphanumeric keys ////////////////
 
+	KEY_ENTER              = '\n',
 	KEY_SPACE             = ' ',
 	KEY_0                 = '0',
 	KEY_1                 = '1',
