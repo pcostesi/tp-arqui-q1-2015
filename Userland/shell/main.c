@@ -6,7 +6,6 @@
 char * asd = "Hola esto es un string largo para que se rompa en algun lugar, se pise con algo y el resto salgan bien";
 
 int main(unsigned int pcount, char * pgname[], void * pgptrs[]) {
-	int i = 10000;
 	unsigned int cur;
 	char fmt[] = "Module #%d - <%s> at %x\n";
 	char greeting[] = "Loading %d modules.\n";
@@ -17,11 +16,9 @@ int main(unsigned int pcount, char * pgname[], void * pgptrs[]) {
 	}
 
 	
-	init_shell();
 	putc('\n');
-	putc('a');
-	print_commands();
 	init_shell();
+
 	while(1){
 		update_shell();
 	}

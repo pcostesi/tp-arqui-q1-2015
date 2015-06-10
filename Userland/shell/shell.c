@@ -19,6 +19,8 @@ void init_shell()
 	initialize_cmd_table(); 
 	prnt_welcome_msg();
 	print_shell_text();
+	print_commands();
+
 
 }
 
@@ -44,7 +46,6 @@ void update_shell()
 	{
 		return;
 	}
-
 	if(key == '\n')
 	{
 		putc('\n');
@@ -52,7 +53,6 @@ void update_shell()
 		print_shell_text();
 		clean_buffer();
 	}
-
 	if(curr_pos >= 128/*SHELL_BUFFER_SIZE*/-2)
 	{
 		//sound beep
