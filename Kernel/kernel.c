@@ -47,8 +47,7 @@ void * initializeKernelBinary()
 	 * IT BREAKS, LIKE, *REALLY* BAD.
 	 */
 	void * moduleAddresses[] = {
-	    shellModuleAddress,
-	    tplModuleAddress
+	    shellModuleAddress
 	};
 
 	loadModules(&endOfKernelBinary, moduleAddresses);

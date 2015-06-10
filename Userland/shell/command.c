@@ -36,10 +36,8 @@ void echo(char** args, int argc)
 
 void clear(char** args, int argc)
 {
-	int i = 0;
-	for(i=0; i<25;i++){
-		printf("\n");
-	}
+    ioctl(STDOUT, IOCTL_CLR,    (void *) 0);
+    ioctl(STDOUT, IOCTL_MOVE,   (void *) 0);
 }
 
 
