@@ -20,7 +20,7 @@ extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
 
-static void * shellModuleAddress = (void*)0x400000;
+static const void * shellModuleAddress = (void*)0x400000;
 
 int timer = 0;
 
@@ -54,39 +54,8 @@ void * initializeKernelBinary()
 	};
 
 
-	ncPrint("[x64BareBones]");
-	ncNewline();
-	ncNewline();
-
-	ncPrint("[Loading modules]");
-	ncNewline();
-
 	loadModules(&endOfKernelBinary, moduleAddresses);
-	ncPrint("[Done]");
-	ncNewline();
-	ncNewline();
-
-	ncPrint("[Initializing kernel's binary]");
-	ncNewline();
-
 	clearBSS(&bss, &endOfKernel - &bss);
-
-	ncPrint("  text: 0x");
-	ncPrintHex((uint64_t)&text);
-	ncNewline();
-	ncPrint("  rodata: 0x");
-	ncPrintHex((uint64_t)&rodata);
-	ncNewline();
-	ncPrint("  data: 0x");
-	ncPrintHex((uint64_t)&data);
-	ncNewline();
-	ncPrint("  bss: 0x");
-	ncPrintHex((uint64_t)&bss);
-	ncNewline();
-
-	ncPrint("[Done]");
-	ncNewline();
-	ncNewline();
 	return getStackBase();
 }
 
@@ -124,42 +93,15 @@ int main()
 	kbrd_install();
 	vid_clr();
 	
-	/* timer/"proto-scheduler" initialization */
-	/* call shell (how do we call as userspace?) */
 
-	/*
-	ncPrint("[Kernel Main]");
-	ncNewline();
-	ncPrint("  Sample code module at 0x");
-	ncPrintHex((uint64_t)sampleCodeModuleAddress);
-	ncNewline();
-	*/
-    /*
-	ncPrint("  Calling the sample code module returned: ");
-	ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
-     */
-	/*
-	ncNewline();
-	ncNewline();
-
-	ncPrint("  Sample data module at 0x");
-	ncPrintHex((uint64_t)sampleDataModuleAddress);
-	ncNewline();
-	ncPrint("  Sample data module contents: ");
-	ncPrint((char*)sampleDataModuleAddress);
-	ncNewline();
-	ncNewline();
-
-	ncPrint("[Finished]");
-	*/
+	/* these are the PUBLICLY ACCESSIBLE modules */
 	void * moduleAddresses[] = {
-	    shellModuleAddress
 	};
 
 	char * moduleNames[] = {
-	    "shellModule"
 	};
 
+	/* call shell */
 	uint8_t modules = sizeof(moduleNames) / sizeof(char *);
     ((EntryPoint)shellModuleAddress)(modules, moduleNames, moduleAddresses);
 
