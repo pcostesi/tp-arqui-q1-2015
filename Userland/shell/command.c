@@ -24,17 +24,19 @@ void help(char *argv[], int argc)
 void echo(char** args, int argc)
 {
 	int i;
-	for(i=0; i < argc ; i++)
+	char fmt[]="%s ";
+	for(i=0; i <=argc ; i++)
 	{
-		printf("%s \n", args[argc]);
+		printf(fmt, args[i]);
 	}
+	putc('\n');
 
 }
 
 void clear(char** args, int argc)
 {
 	int i = 0;
-	for(i=0; i<20;i++){
+	for(i=0; i<25;i++){
 		printf("\n");
 	}
 }
@@ -218,11 +220,9 @@ void getchar_cmd(char *argv[], int argc)
 void printf_cmd(char *argv[], int argc) 
 {
 	printf("Testing printf...\n\n");
-	printf("Printing a double: %f\n", 123.456789);
 	printf("Printing an integer: %d\n", 99);
-	printf("Printing an unsigned integer: %u\n", 312312);
-	printf("Printing a string %s\n", "This is a real cool string!");
-	printf("Printing in lowercase hexadecimal notation: %x\n", 0x55fa);
+	printf("Printing a string: %s\n", "This is a real cool string!");
+	printf("Printing in uppercase hexadecimal notation: %x\n", 0x55fa);
 	printf("Printing a single char: %c\n", 'c');
 }
 
@@ -234,27 +234,27 @@ void scanf_cmd(char *argv[], int argc)
 	printf("Welcome to scanf user test:\n ");
 	printf("And so, the trial begins...\n");
 	printf("Please type in a number: ");
-	//scanf("%d", &n);
+	scanf("%d", &n);
 	printf("You typed in: %d\n\n", n);
 	reset_vect(vec);
 	
 	printf("Trial number 2...type in a short text: ");
-	//scanf("%s", vec);
+	scanf("%s", vec);
 	printf("You typed in: %s\n\n", vec);
 	reset_vect(vec);
 
 	printf("Trial number 3...Please type in a single character: ");
-	//("%c", vec);
+	scanf("%c", vec);
 	printf("\nYou typed: %c\n\n", vec[0]);
 	reset_vect(vec);
 
 	printf("And so, the final trial begins:\n");
 	printf("Are you ready? Type in Y or N\n");
-	//scanf("%s", vec);
+	scanf("%s", vec);
 	reset_vect(vec);
 	printf(" Actually your response was irrelevant, proceeding with last trial...\n ");
 	printf("Type in double format, your credit card number followed by verification code\n" );
-	//scanf("%f", &f);
+	scanf("%f", &f);
 	printf("\nYour fake card data was: %f\n\n", f);
 	reset_vect(vec);
 }
