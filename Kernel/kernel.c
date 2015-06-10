@@ -21,6 +21,7 @@ extern uint8_t endOfKernel;
 static const uint64_t PageSize = 0x1000;
 
 static const void * shellModuleAddress = (void*)0x400000;
+static const void * tplModuleAddress = (void*)0x800000;
 
 int timer = 0;
 
@@ -46,13 +47,9 @@ void * initializeKernelBinary()
 	 * IT BREAKS, LIKE, *REALLY* BAD.
 	 */
 	void * moduleAddresses[] = {
-	    shellModuleAddress
+	    shellModuleAddress,
+	    tplModuleAddress
 	};
-
-	char * moduleNames[] = {
-	    "shellModule"
-	};
-
 
 	loadModules(&endOfKernelBinary, moduleAddresses);
 	clearBSS(&bss, &endOfKernel - &bss);
