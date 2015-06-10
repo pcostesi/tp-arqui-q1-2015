@@ -45,21 +45,21 @@ void clear(char** args, int argc)
 
 void date(char** args, int argc)
 {
-	//TODO int date params;
-	//TODO get_date(); //implementation pending
-	printf("Implement date");
+	struct rtc_time time_struct;
+	gettime(&time_struct);
+	printf("%d/%d/%d\n",
+		time_struct.day,
+		time_struct.mon,
+		time_struct.year
+	);
+
 }
 
 void time(char** args, int argc)
 {
-	//TODO int time params;
-	//TODO gettime(); //implementation pending
 	struct rtc_time time_struct;
 	gettime(&time_struct);
-	printf("%d/%d/%d %d:%d:%d\n",
-		time_struct.day,
-		time_struct.mon,
-		time_struct.year,
+	printf("%d:%d:%d\n",
 		time_struct.hour,
 		time_struct.min,
 		time_struct.sec
@@ -68,7 +68,10 @@ void time(char** args, int argc)
 
 void set_date(char** args, int argc)
 {
+	struct rtc_time time_struct;
 	int days, months, years;
+
+	gettime(&time_struct);
 	if(argc <1){
 		char err[] ="Invalid date inserted, please respect dd/mm/yyyy format & insert a valid date.\n";
 		char fmt[]= "%s";
@@ -82,12 +85,19 @@ void set_date(char** args, int argc)
 		return;
 
 	}
-	//TODO   set system date
+	time_struct.year = years;
+	time_struct.mon = months;
+	time_struct.day = days;
+
+	settime(&time_struct);
 }
 
 void set_time(char** args, int argc)
 {
+	struct rtc_time time_struct;
 	int seconds, minutes, hours;
+
+	gettime(&time_struct);
 	if(argc < 1)
 	{
 		char err[] ="No arguments were sent to command settime format musut be ss:mm:hh \n";
@@ -102,7 +112,13 @@ void set_time(char** args, int argc)
 		printf(fmt, err);
 		return;
 	}
-	//TODO SET SYSTEM TIME
+
+
+	time_struct.sec = seconds;
+	time_struct.min = minutes;
+	time_struct.hour = hours;
+
+	settime(&time_struct);
 
 }
 
