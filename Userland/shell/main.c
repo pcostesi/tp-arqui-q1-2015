@@ -1,5 +1,9 @@
 #include <stdio.h>
-#import <shell.h>
+#include <shell.h>
+#include <stdint.h>
+#include <stdlib.h>
+
+char * asd = "Hola esto es un string largo para que se rompa en algun lugar, se pise con algo y el resto salgan bien";
 
 int main(unsigned int pcount, char * pgname[], void * pgptrs[]) {
 	int i = 10000;

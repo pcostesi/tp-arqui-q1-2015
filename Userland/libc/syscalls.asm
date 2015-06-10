@@ -26,9 +26,11 @@ SECTION .text
 %macro ENTER 0
     push    rbp
     mov     rbp, rsp
+    PUSHALL
 %endmacro
 
 %macro LEAVE 0
+    POPALL
     pop     rbp
     ret
 %endmacro

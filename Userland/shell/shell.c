@@ -180,7 +180,7 @@ cmd_entry* get_command_table()
 void print_commands()
 {
 	int i;
-	char fmt[] = "%s\n";
+	char fmt[] = "command %s\n";
 	for( i=0; i < cmd_count; i++)
 	{
 		printf(fmt, cmd_table[i].name);
@@ -195,8 +195,7 @@ int get_cmd_count()
 
 void initialize_cmd_table()
 {
-	char name[] = "echo";
-	cmd_table[0].name = name;
+	cmd_table[0].name = "echo";
 	cmd_table[1].name = "clear";
 	cmd_table[2].name = "date";
 	cmd_table[3].name = "time";

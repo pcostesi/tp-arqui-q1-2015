@@ -20,9 +20,8 @@ extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
 
-static void * shellModuleAddress = (void*)0x60000;
-static void * sampleDataModuleAddress = (void*)0x50000;
-static void * sampleCodeModuleAddress = (void*)0x40000;
+static void * shellModuleAddress = (void*)0x400000;
+
 int timer = 0;
 
 typedef int (*EntryPoint)(unsigned int pcount, char * pgname[], void * pgptrs[]);
@@ -47,14 +46,10 @@ void * initializeKernelBinary()
 	 * IT BREAKS, LIKE, *REALLY* BAD.
 	 */
 	void * moduleAddresses[] = {
-	    sampleCodeModuleAddress,
-	    sampleDataModuleAddress,
 	    shellModuleAddress
 	};
 
 	char * moduleNames[] = {
-	    "sampleCodeModule",
-	    "sampleDataModule",
 	    "shellModule"
 	};
 
@@ -158,14 +153,10 @@ int main()
 	ncPrint("[Finished]");
 	*/
 	void * moduleAddresses[] = {
-	    sampleCodeModuleAddress,
-	    sampleDataModuleAddress,
 	    shellModuleAddress
 	};
 
 	char * moduleNames[] = {
-	    "sampleCodeModule",
-	    "sampleDataModule",
 	    "shellModule"
 	};
 
