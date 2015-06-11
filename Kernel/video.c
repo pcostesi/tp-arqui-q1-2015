@@ -130,7 +130,9 @@ void vid_raw_putc(const char c, const enum VID_COLOR fmt)
 		break;
 
 		case '\b':
-		_vid_set_cursor(row, MAX(col - 2, 0));
+                row = (col - 2 < 0) ? MAX(row - 1, 0) : row;
+                col = (col - 2 < 0) ? COLS + col - 2 : col - 2;
+		_vid_set_cursor(row, col);
 		break;
 
 		case '\t':
