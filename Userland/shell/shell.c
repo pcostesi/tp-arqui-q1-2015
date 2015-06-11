@@ -9,7 +9,7 @@ char shell_buffer[128/*SHELL_BUFFER_SIZE*/];
 int curr_pos =0;
 
 cmd_entry cmd_table[11];
-int cmd_count = sizeof(cmd_table);
+int cmd_count = (sizeof(cmd_table) / sizeof(cmd_entry)) - 1;
 
 void init_shell()
 {
@@ -31,9 +31,7 @@ void print_shell_text()
 
 void print_shell_error()
 {
-	char fmt[] = "%s";
-	char shell_text[] = "We are sorry, command does not exist, select one of available commands:\n";
-	printf(fmt, shell_text);
+	printf("We are sorry, command does not exist, select one of available commands:\n");
 }
 
 void update_shell()
@@ -181,10 +179,9 @@ cmd_entry* get_command_table()
 void print_commands()
 {
 	int i;
-	char fmt[] = "command: %s\n";
 	for( i=0; i < cmd_count; i++)
 	{
-		printf(fmt, cmd_table[i].name);
+		printf("command: \t%s\n", cmd_table[i].name);
 	}
 
 }
