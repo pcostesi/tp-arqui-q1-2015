@@ -22,7 +22,7 @@ static const uint64_t PageSize = 0x1000;
 
 static const void * shellModuleAddress = (void*)0x400000;
 
-int timer = 0;
+unsigned int timer = 0;
 
 typedef int (*EntryPoint)(unsigned int pcount, char * pgname[], void * pgptrs[]);
 
