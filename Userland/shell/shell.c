@@ -10,7 +10,7 @@ char shell_buffer[128/*SHELL_BUFFER_SIZE*/];
 int curr_pos =0;
 
 cmd_entry cmd_table[11];
-int cmd_count = (sizeof(cmd_table) / sizeof(cmd_entry)) - 1;
+int cmd_count = (sizeof(cmd_table) / sizeof(cmd_entry));
 
 void init_shell()
 {
