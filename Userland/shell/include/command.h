@@ -2,6 +2,9 @@
 #define __COMMANDS_H_ 1
 #include <shell.h>
 
+#define INVALID_DATE "Invalid date inserted, please respect dd/mm/yy format & insert a valid date.\n"
+#define INVALID_TIME "No arguments were sent to command settime format musut be ss:mm:hh \n"
+
 void echo(char**, int);
 void clear(char**, int);
 void date(char**, int);
@@ -21,4 +24,5 @@ void reset_vect(char vec[]);
 void help_error_print();
 void help(char**, int); 
 void halt_system(void);
+void commands(char** args, int argc);
 #endif

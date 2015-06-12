@@ -83,12 +83,12 @@ void syscall_set_time(struct rtc_time * time)
 {
 	uint8_t registerB = get_rtc_crt(RTC_STATS_MASK_STATUS_REGISTER_B);
 
-	unsigned char sec 	= get_rtc_seconds();
-	unsigned char min 	= get_rtc_minutes();
-	unsigned char hour	= get_rtc_hours();
-	unsigned char mon	= get_rtc_month();
-	unsigned char year	= get_rtc_year();
-	unsigned char day	= get_rtc_day_of_month();
+	unsigned char sec 	= time->sec;
+	unsigned char min 	= time->min;
+	unsigned char hour	= time->hour;
+	unsigned char mon	= time->mon;
+	unsigned char year	= time->year;
+	unsigned char day	= time->day;
 
     // Convert binary to BCD values if necessary
 	if (!(registerB & 0x04)) {
@@ -106,10 +106,10 @@ void syscall_set_time(struct rtc_time * time)
 	    hour = ((hour & 0x7F) + 12) % 24;
 	}
 
-	set_rtc_seconds((uint8_t) time->sec);
-	set_rtc_minutes((uint8_t) time->min);
-	set_rtc_hours((uint8_t) time->hour);
-	set_rtc_month((uint8_t) time->mon);
-	set_rtc_year((uint8_t) time->year);
-	set_rtc_day_of_month((uint8_t) time->day);
+	set_rtc_seconds(sec);
+	set_rtc_minutes(min);
+	set_rtc_hours(hour);
+	set_rtc_month(mon);
+	set_rtc_year(year);
+	set_rtc_day_of_month(day);
 }

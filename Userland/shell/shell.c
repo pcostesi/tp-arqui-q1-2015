@@ -6,10 +6,10 @@
 #include <command.h>
 
 
-char shell_buffer[128/*SHELL_BUFFER_SIZE*/];
+char shell_buffer[SHELL_BUFFER_SIZE];
 int curr_pos =0;
 
-cmd_entry cmd_table[11];
+cmd_entry cmd_table[12];
 int cmd_count = (sizeof(cmd_table) / sizeof(cmd_entry));
 
 void init_shell()
@@ -25,14 +25,12 @@ void init_shell()
 
 void print_shell_text()
 {
-	char fmt[] = "%s";
-	char shell_text[] = "Shell> ";
-	printf(fmt, shell_text);
+	printf(SHELL_TEXT);
 }
 
 void print_shell_error()
 {
-	printf("We are sorry, command does not exist, select one of available commands:\n");
+	printf("We are sorry, \"%s\" command does not exist. \nFor full list of commands please type: \"commands\"\n", shell_buffer);
 }
 
 void update_shell()
@@ -60,7 +58,7 @@ void update_shell()
 			shell_buffer[curr_pos] = '\0';
 		}
 
-	} else if(curr_pos >= 128/*SHELL_BUFFER_SIZE*/-2) {
+	} else if(curr_pos >= SHELL_BUFFER_SIZE-2) {
 		//sound beep
 		return;
 
@@ -81,7 +79,6 @@ void excecute_command(char* buffer)
 	if( cmd_no == -1)
 	{
 		print_shell_error();
-		print_commands();
 		return;
 	}
 
@@ -153,7 +150,7 @@ unsigned int get_arguments(char* buffer, char ** args)
 void clean_buffer()
  {
 	int i = 0;
-	while(i < 128/*SHELL_BUFFER_SIZE*/ && i < curr_pos)
+	while(i < SHELL_BUFFER_SIZE && i < curr_pos)
 	{
 		shell_buffer[i] = '\0';
 		i++;
@@ -164,9 +161,7 @@ void clean_buffer()
 
 void prnt_welcome_msg()
  {
- 	char fmt_s[] = "%s";
- 	char welcome[] = "\n\n***Welcome to Barely Compiles OS***\n\n";
-	printf(fmt_s, welcome);
+	printf(WELCOME_TEXT);
 }
 
 //Returns the index of the command in the command table, if such command does not exist, returns -1
@@ -188,13 +183,13 @@ cmd_entry* get_command_table()
 }
 
 
-
+//Prints list of available commands
 void print_commands()
 {
 	int i;
 	for( i=0; i < cmd_count; i++)
 	{
-		printf("command: \t%s\n", cmd_table[i].name);
+		printf("\t%s\n", cmd_table[i].name);
 	}
 
 }
@@ -217,6 +212,7 @@ void initialize_cmd_table()
 	cmd_table[8].name = "scanf";
 	cmd_table[9].name = "help";
 	cmd_table[10].name = "halt";
+	cmd_table[11].name = "commands";
 	
 	
 	cmd_table[0].func = &echo;
@@ -230,6 +226,7 @@ void initialize_cmd_table()
 	cmd_table[8].func = &scanf_cmd;
 	cmd_table[9].func = &help;
 	cmd_table[10].func = &halt_system;
+	cmd_table[11].func = &commands;
 
 
 	cmd_table[0].help = "Echo repeats the input string following echo statement \n example: \"echo Hello I am using echo\"";
@@ -243,5 +240,6 @@ void initialize_cmd_table()
 	cmd_table[8].help = "Test command for the High Command to test scanf() functionality\n";
 	cmd_table[9].help = "Displays information about following command, syntaxt: \"help \"command_name\"\"\n";
 	cmd_table[10].help = "Halts the system.\n";
+	cmd_table[11].help = "Displays list of available commands\n";
 
 }
