@@ -25,10 +25,9 @@ void help(char *argv[], int argc)
 void echo(char** args, int argc)
 {
 	int i;
-	char fmt[]="%s ";
-	for(i=0; i <=argc ; i++)
+	for(i = 0; i < argc; i++)
 	{
-		printf(fmt, args[i]);
+		printf("%s ", args[i]);
 	}
 	putc('\n');
 

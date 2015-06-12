@@ -14,14 +14,13 @@ int main(unsigned int pcount, char * pgname[], void * pgptrs[]) {
 	for (cur = 0; cur < pcount; cur++) {
 		printf(fmt, cur, pgname[cur], pgptrs[cur]);
 	}
-
 	
 	putc('\n');
 	init_shell();
 
-	while(1){
+	while (1) {
 		update_shell();
 	}
-	putc('a');
+
 	return 0;
 }

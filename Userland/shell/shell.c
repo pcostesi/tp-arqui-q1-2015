@@ -1,5 +1,6 @@
 #include <shell.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include <command.h>
@@ -203,20 +204,8 @@ void initialize_cmd_table()
 	cmd_table[7].name = "printf";
 	cmd_table[8].name = "scanf";
 	cmd_table[9].name = "help";
-	cmd_table[9].name = "halt";
+	cmd_table[10].name = "halt";
 	
-	cmd_table[0].help = "Echo repeats the input string following echo statement \n example: \"echo Hello I am using echo\"";
-	cmd_table[1].help = "Clears the screen, uses no arguments, therefore will ignore any ones received\n";
-	cmd_table[2].help = "Prints current system date on screen\n";
-	cmd_table[3].help = "Prints current system time on screen\n";
-	cmd_table[4].help = "Sets system date, format must be dd/mm/yyyy.\nExample: \"setdate 05/05/2015\"\n";
-	cmd_table[5].help = "Sets system time, format must be ss:mm:hh.\n Example: \" settime 23:23:23\"\n";
-	cmd_table[6].help = "Test command for directive board to test getchar() functionality.\n";
-	cmd_table[7].help = "Test command for supreme leaders to test printf() functionality \n";
-	cmd_table[8].help = "Test command for the High Command to test scanf() functionality\n";
-	cmd_table[9].help = "Displays information about following command, syntaxt: \"help \"command_name\"\"\n";
-	cmd_table[9].help = "Halts the system.\n";
-
 	
 	cmd_table[0].func = &echo;
 	cmd_table[1].func = &clear;
@@ -228,5 +217,19 @@ void initialize_cmd_table()
 	cmd_table[7].func = &printf_cmd;
 	cmd_table[8].func = &scanf_cmd;
 	cmd_table[9].func = &help;
-	cmd_table[9].func = &halt_system;
+	cmd_table[10].func = &halt_system;
+
+
+	cmd_table[0].help = "Echo repeats the input string following echo statement \n example: \"echo Hello I am using echo\"";
+	cmd_table[1].help = "Clears the screen, uses no arguments, therefore will ignore any ones received\n";
+	cmd_table[2].help = "Prints current system date on screen\n";
+	cmd_table[3].help = "Prints current system time on screen\n";
+	cmd_table[4].help = "Sets system date, format must be dd/mm/yyyy.\nExample: \"setdate 05/05/2015\"\n";
+	cmd_table[5].help = "Sets system time, format must be ss:mm:hh.\n Example: \" settime 23:23:23\"\n";
+	cmd_table[6].help = "Test command for directive board to test getchar() functionality.\n";
+	cmd_table[7].help = "Test command for supreme leaders to test printf() functionality \n";
+	cmd_table[8].help = "Test command for the High Command to test scanf() functionality\n";
+	cmd_table[9].help = "Displays information about following command, syntaxt: \"help \"command_name\"\"\n";
+	cmd_table[10].help = "Halts the system.\n";
+
 }
