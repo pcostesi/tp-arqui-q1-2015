@@ -17,7 +17,7 @@ void excecute_command(char*);
 int parse_command(char*);
 void clean_buffer(void);
 void prnt_welcome_msg(void);
-char** get_arguments(char*, int*);
+unsigned int get_arguments(char* buffer, char ** args);
 void prnt_welcome_msg(void);
 int get_cmd_index(char *);
 cmd_entry* get_command_table(void);

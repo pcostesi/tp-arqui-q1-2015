@@ -38,30 +38,20 @@ void print_shell_error()
 void update_shell()
 {
 	char key;
-	key = getc(); 
-	if(key == 0)
-	{
+	key = getc();
+
+	if(key == 0) {
 		return;
 	}
 
-	if(key == '\n')
-	{
+	if(key == '\n') {
 		putc('\n');
+		shell_buffer[curr_pos] = 0;
 		excecute_command(shell_buffer);
 		print_shell_text();
 		clean_buffer();
-	}
 
-	else if(curr_pos >= 128/*SHELL_BUFFER_SIZE*/-2)
-	{
-		//sound beep
-		return;
-	}
-
-
-
-	else if (key == '\b')
-	{
+	} else if (key == '\b') {
 		if(curr_pos > 0){
 			putc('\b');
 			putc(' ');
@@ -69,9 +59,12 @@ void update_shell()
 			curr_pos--;
 			shell_buffer[curr_pos] = '\0';
 		}
-	}
-	else 
-	{
+
+	} else if(curr_pos >= 128/*SHELL_BUFFER_SIZE*/-2) {
+		//sound beep
+		return;
+
+	} else {
 		putc(key);
 		shell_buffer[curr_pos] = key;
 		curr_pos++;
@@ -80,6 +73,9 @@ void update_shell()
 
 void excecute_command(char* buffer)
 {
+	int argc,
+		cmd_len;
+	char * args[64];
 
 	int cmd_no = parse_command(buffer);
 	if( cmd_no == -1)
@@ -88,53 +84,69 @@ void excecute_command(char* buffer)
 		print_commands();
 		return;
 	}
-	int argc, cmd_len;
+
 	cmd_len = strlen(cmd_table[cmd_no].name);
-	char** args = get_arguments(buffer+cmd_len, &argc);
+	argc = get_arguments(buffer + cmd_len, args);
 	cmd_table[cmd_no].func(args, argc);
 }
 
 int parse_command(char* buffer)
 {
-	int i = 0, cmd_no = -1;
-	if(buffer[0] == '\0')
-	{
+	int i = 0,
+		cmd_no = -1;
+
+	if(buffer[0] == '\0') {
 		return -1;
 	}
 
-	while( cmd_no == -1 && i < cmd_count){
-		if(substr(cmd_table[i].name, buffer))
-		{
+	while (cmd_no == -1 && i < cmd_count) {
+		if (substr(cmd_table[i].name, buffer)) {
 			cmd_no = i;
 		}
 		i++;
 	}
+
 	i = strlen(cmd_table[cmd_no].name);
 	char next = buffer[i];
+
 	if(next == ' ' || next == '\0'){
 		return cmd_no;
 	}
+
 	return -1;
 }
 
 
 
-char** get_arguments(char* buffer, int* argc)
+unsigned int get_arguments(char* buffer, char ** args)
 {
-	char* argv[25/*MAX_ARG_DIM*/];
-	int i = 0, arg = 0;
-	while(buffer[i] != '\0' && arg < 25/*MAX_ARG_DIM*/) {
-		if(buffer[i+1]==' ')
-		{
-		}
-		else if (buffer[i] == ' ') {
-			argv[arg++] = buffer + i + 1;
-			buffer[i] = '\0';
-		}
+	int arg = 0,	// current argument
+		i = 0;		// current buffer index
+
+	char * ptr = NULL;
+
+	while (buffer[i] != '\0' && buffer[i] == ' ') {
 		i++;
 	}
-	*argc = arg;
-	return argv;
+
+	while (buffer[i] != '\0' && arg < 64) {
+		// guard condition
+		if (buffer[i] == ' ') {
+			ptr = NULL;
+			buffer[i] = '\0';
+			i++;
+			continue;
+		}
+
+		if (ptr == NULL) {
+			ptr = buffer + i;
+			args[arg] = ptr;
+			arg++;
+		}
+
+		i++;
+	}
+	return arg;
 }
 
 
