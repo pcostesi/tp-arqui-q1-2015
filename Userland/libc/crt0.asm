@@ -54,7 +54,7 @@ GLOBAL _start
 _start:
     ENTER
     PUSHALL
-    call	_bss
+    ;call	_bss
     call 	main
     POPALL
     LEAVE

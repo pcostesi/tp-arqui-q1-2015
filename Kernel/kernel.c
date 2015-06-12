@@ -21,7 +21,6 @@ extern uint8_t endOfKernel;
 static const uint64_t PageSize = 0x1000;
 
 static const void * shellModuleAddress = (void*)0x400000;
-static const void * tplModuleAddress = (void*)0x800000;
 
 int timer = 0;
 
@@ -92,11 +91,9 @@ int main()
 
 	/* these are the PUBLICLY ACCESSIBLE modules */
 	void * moduleAddresses[] = {
-		tplModuleAddress
 	};
 
 	char * moduleNames[] = {
-		"template"
 	};
 
 	/* call shell */
