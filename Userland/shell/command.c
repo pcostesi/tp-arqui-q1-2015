@@ -12,7 +12,7 @@ void help(char *argv[], int argc)
 	if (argc == 1) {
 		cmd_index = get_cmd_index(argv[0]);
 		if (cmd_index != -1) {
-			printf("\n%s\n", table[cmd_index].help);
+			printf("%s", table[cmd_index].help);
 		} else {
 			help_error_print(table);
 		}
@@ -30,13 +30,18 @@ void echo(char** args, int argc)
 		printf("%s ", args[i]);
 	}
 	putc('\n');
-
 }
 
 void clear(char** args, int argc)
 {
     ioctl(STDOUT, IOCTL_CLR,    (void *) 0);
     ioctl(STDOUT, IOCTL_MOVE,   (void *) 0);
+}
+
+void commands(char** args, int argc)
+{
+	printf("Available commands are: \n");
+	print_commands();
 }
 
 
@@ -49,7 +54,6 @@ void date(char** args, int argc)
 		time_struct.mon,
 		time_struct.year
 	);
-
 }
 
 void time(char** args, int argc)
@@ -70,15 +74,11 @@ void set_date(char** args, int argc)
 
 	gettime(&time_struct);
 	if(argc <1){
-		char err[] ="Invalid date inserted, please respect dd/mm/yyyy format & insert a valid date.\n";
-		char fmt[]= "%s";
-		printf(fmt, err);
+		printf(INVALID_DATE);
 		return;
 	}
 	if(!parse_date(args[0], &days, &months, &years)){
-		char err[] ="Invalid date inserted, please respect dd/mm/yyyy format & insert a valid date.\n";
-		char fmt[]= "%s";
-		printf(fmt, err);
+		printf(INVALID_DATE);
 		return;
 
 	}
@@ -97,16 +97,12 @@ void set_time(char** args, int argc)
 	gettime(&time_struct);
 	if(argc < 1)
 	{
-		char err[] ="No arguments were sent to command settime format musut be ss:mm:hh \n";
-		char fmt[]= "%s";
-		printf(fmt, err);
+		printf(INVALID_TIME);
 		return;
 	}	
 	if(!parse_time(args[0], &seconds, &minutes, &hours))
 	{
-		char err[] ="Invalid date inserted, please respect ss:mm:hh format & insert a valid date.\n";
-		char fmt[]= "%s";
-		printf(fmt, err);
+		printf(INVALID_TIME);
 		return;
 	}
 
@@ -124,7 +120,7 @@ int parse_date(char* date_string, int* days, int*months, int*years)
 {
 	int len =0;
 	len = strlen(date_string);
-	if(len !=10)
+	if(len !=8)
 	{
 		return 0;
 	}
@@ -143,14 +139,13 @@ int parse_date(char* date_string, int* days, int*months, int*years)
 		return 0;
 	}
 	//years
-	if( !is_num(date_string[6]) || !is_num(date_string[7] || date_string[8]) || !is_num(date_string[9]))
-	{
+	if( !is_num(date_string[6]) || !is_num(date_string[7]) )
+	{	
 		return 0;
 	}
 	*days = ((int)date_string[0]-'0' )*10+(int)(date_string[1]-'0'); 
 	*months = ((int)date_string[3]-'0' )*10+(int)(date_string[4]-'0');
-	*years = ((int)date_string[6]-'0' )*1000+(int)(date_string[7]-'0')*100 +
-			((int)date_string[8]-'0' )*10+(int)(date_string[9]-'0'); 
+	*years = ((int)date_string[6]-'0' )*10+(int)(date_string[7]-'0'); 	
 	return valid_date(*days, *months, *years);
 
 }
@@ -172,12 +167,12 @@ int parse_time(char* time_string, int* seconds, int*minutes, int*hours)
 	{
 		return 0;
 	}
-	//days
+	//minutes
 	if( !is_num(time_string[3]) || !is_num(time_string[4]))
 	{
 		return 0;
 	}
-	//months
+	//hours
 	if( !is_num(time_string[6]) || !is_num(time_string[7]))
 	{
 		return 0;
@@ -211,11 +206,11 @@ int valid_time(int sec, int min, int hrs)
 
 }
 
-int valid_date(int year, int month, int day)
+int valid_date(int day, int month, int year)
 {
 	unsigned short monthlen[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-	if (year < 0 || month < 1 || year < 0 || month > 12){
+	if (month < 1 || day < 1 || month > 12){
 		return 0;
 	}
 	if (is_leap_year(year) && month == 2) {
@@ -302,8 +297,5 @@ void halt_system(void)
 
 void help_error_print()
 {
-	printf("\nYou selected an non existing command, please choose one of the following:\n");
-	print_commands();
-	printf("\nInvoke help as follows: \"help \"command_name\"\"\n");	
+	printf("\nInvoke help as follows: \"help \"command_name\"\".\nTo see list of available commands type \"commands\"");	
 }
-
