@@ -8,14 +8,15 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define TAB_SIZE (8)
+#define VIDEO_BASE_ADDR ((char *) 0xB8000)
 
-static volatile char * _vid_video = (char *) 0xB8000;
-static volatile char * _vid_cursor = (char *) 0xB8000;
+static volatile char * _vid_video = VIDEO_BASE_ADDR;
+static volatile char * _vid_cursor = VIDEO_BASE_ADDR;
 static char _vid_fmt = (char) 0x07;
-static char vid_buffer[VID_BUF_SIZE];
-static char * vid_buffer_cursor = (char *) 0xB8000;
+static char vid_buffer[VID_BUF_SIZE] = {0};
+static volatile char * vid_buffer_cursor = VIDEO_BASE_ADDR;
 
-inline static void vid_scroll();
+inline static void vid_scroll(void);
 inline static void _vid_copy_row(const int row_src, const int row_dst);
 static void _vid_set_cursor(const unsigned int row, const unsigned int col);
 
@@ -33,7 +34,7 @@ void vid_flip_buffer(void)
 	}
 
 	cur = vid_buffer_cursor;
-	vid_buffer_cursor = (char *) _vid_cursor;
+	vid_buffer_cursor = (volatile char *) _vid_cursor;
 	_vid_cursor = cur;
 }
 
@@ -58,7 +59,7 @@ void vid_print(const char * str, unsigned int n)
 void vid_clr() {
 	int i;
 	_vid_set_cursor(0, 0);
-	for (i = 0; i < COLS * ROWS ; i++) {
+	for (i = 0; i < COLS * ROWS; i++) {
 		*_vid_cursor++ = (char) ' ';
 		*_vid_cursor++ = (char) 0;
 	}
@@ -159,7 +160,7 @@ inline static void _vid_copy_row(const int row_src, const int row_dst)
 	}
 }
 
-inline static void vid_scroll()
+inline static void vid_scroll(void)
 {
 	int row, col;
 	char * ptr = VID_RAW_POS(ROWS - 1, 0);
@@ -179,4 +180,5 @@ inline static void vid_scroll()
 #undef MIN
 #undef TAB_SIZE
 #undef VID_RAW_POS
+#undef VIDEO_BASE_ADDR
 #undef VID_BUF_SIZE
