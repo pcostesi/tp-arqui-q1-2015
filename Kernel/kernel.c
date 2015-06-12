@@ -18,7 +18,7 @@ extern uint8_t bss;
 extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
-static const uint64_t PageSize = 0x1000;
+static const uint64_t PageSize = 0x4000;
 
 static const void * shellModuleAddress = (void*)0x400000;
 
