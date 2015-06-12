@@ -9,19 +9,19 @@ toolchain:
 bootloader:
 	cd Bootloader; make all
 
-kernel:
+kernel:	bootloader
 	cd Kernel; make all
 
-userland:
+userland:	kernel toolchain
 	cd Userland; make all
 
-image: kernel bootloader userland toolchain
+image: clean kernel bootloader userland
 	cd Image; make all
 
-run:	clean image
+run:	image
 	bash run.sh
 
-raw:	clean image
+raw:	image
 	bash run.sh img
 
 clean:
