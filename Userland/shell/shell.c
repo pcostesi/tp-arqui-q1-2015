@@ -9,7 +9,7 @@
 char shell_buffer[SHELL_BUFFER_SIZE];
 int curr_pos =0;
 
-cmd_entry cmd_table[12];
+cmd_entry cmd_table[13];
 int cmd_count = (sizeof(cmd_table) / sizeof(cmd_entry));
 
 void init_shell()
@@ -213,7 +213,7 @@ void initialize_cmd_table()
 	cmd_table[9].name = "help";
 	cmd_table[10].name = "halt";
 	cmd_table[11].name = "commands";
-	
+	cmd_table[12].name = "printascii";
 	
 	cmd_table[0].func = &echo;
 	cmd_table[1].func = &clear;
@@ -227,12 +227,12 @@ void initialize_cmd_table()
 	cmd_table[9].func = &help;
 	cmd_table[10].func = &halt_system;
 	cmd_table[11].func = &commands;
-
+	cmd_table[12].func = &print_ascii_table;
 
 	cmd_table[0].help = "Echo repeats the input string following echo statement \n example: \"echo Hello I am using echo\"";
 	cmd_table[1].help = "Clears the screen, uses no arguments, therefore will ignore any ones received\n";
-	cmd_table[2].help = "Prints current system date on screen\n";
-	cmd_table[3].help = "Prints current system time on screen\n";
+	cmd_table[2].help = "Prints current system date on screen with format: \"dd/mm/yy\"\n";
+	cmd_table[3].help = "Prints current system time on screenwith format: \"hs:mm:ss\"\n";
 	cmd_table[4].help = "Sets system date, format must be dd/mm/yyyy.\nExample: \"setdate 05/05/2015\"\n";
 	cmd_table[5].help = "Sets system time, format must be ss:mm:hh.\n Example: \" settime 23:23:23\"\n";
 	cmd_table[6].help = "Test command for directive board to test getchar() functionality.\n";
@@ -241,5 +241,5 @@ void initialize_cmd_table()
 	cmd_table[9].help = "Displays information about following command, syntaxt: \"help \"command_name\"\"\n";
 	cmd_table[10].help = "Halts the system.\n";
 	cmd_table[11].help = "Displays list of available commands\n";
-
+	cmd_table[12].help = "Prints entire list of ascii characters in order\n";
 }

@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <libc.h>
 
+/*****Commands functions*****/
+
 
 void help(char *argv[], int argc) 
 {
@@ -95,13 +97,11 @@ void set_time(char** args, int argc)
 	int seconds, minutes, hours;
 
 	gettime(&time_struct);
-	if(argc < 1)
-	{
+	if(argc < 1){
 		printf(INVALID_TIME);
 		return;
 	}	
-	if(!parse_time(args[0], &seconds, &minutes, &hours))
-	{
+	if(!parse_time(args[0], &seconds, &minutes, &hours)){
 		printf(INVALID_TIME);
 		return;
 	}
@@ -114,6 +114,34 @@ void set_time(char** args, int argc)
 	settime(&time_struct);
 
 }
+ 
+void halt_system(void)
+{
+	halt();
+}
+
+void print_ascii_table(char** args, int argc)
+{
+	int i = 0;
+	
+	for (i = 0; i<128; i++){
+		printf("%d:", i);
+		putc(i);
+		putc('\t');
+	}
+}
+
+
+
+
+
+
+/*****Auxiliary functions for commands*****/
+
+
+
+
+
 
 //Receives input string, parses it for a date, returns 1 if valid, 0 if not
 int parse_date(char* date_string, int* days, int*months, int*years)
@@ -289,13 +317,10 @@ void reset_vect(char vec[])
 /*TODO EPIC ASCII STAR*/
 //TODO EVIL MUSIC 
 
- 
-void halt_system(void)
-{
-	halt();
-}
 
 void help_error_print()
 {
 	printf("\nInvoke help as follows: \"help \"command_name\"\".\nTo see list of available commands type \"commands\"");	
 }
+
+
