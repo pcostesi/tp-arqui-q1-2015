@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-static unsigned int read_number(int fd, va_list ap, int c);
-static unsigned int read_escape(int fd, char c);
+static unsigned int read_fmt(int fd, va_list ap, int c);
 
-static int read_str(int fd, char ** str);
-static int read_base(int fd, int * n, int base);
+static int read_str(int fd, char * str);
+static int read_base_10(int fd, int * n);
 
 
 int scanf(char * fmt, ...)
@@ -14,7 +13,7 @@ int scanf(char * fmt, ...)
 	int read;
 	
 	va_start(ap, fmt);
-	read = vfscanf(STDOUT, fmt, ap);
+	read = vfscanf(STDIN, fmt, ap);
 	va_end(ap);
 	return read;
 }
@@ -37,78 +36,46 @@ int vfscanf(int fd, char * fmt, va_list ap)
 	char * ptr = fmt;
 	int in_fmt = 0;
 	int read = 0;
+	int last;
 
 	while ((c = *ptr++) != (char) 0) {
+		while ((last = fgetc(fd)) == ' ');
 		if (in_fmt) {
-			switch (in_fmt) {
-				case '%':
-				read += read_number(fd, ap, c);
-				break;
-
-				case '\\':
-				read += read_escape(fd, c);
-				break;
-
-				default:
+			fungetc(fd, last);
+			if (!read_fmt(fd, ap, c)) {
 				return read;
 			}
+			read++;
 			in_fmt = 0;
-			continue;		
-		}
-
-		if (c == '%' || c == '\\') {
+		} else if (c == '%') {
 			in_fmt = c;
-		} else if (c >= 0){
-			if (fgetc(fd) != c) {
-				return read;
-			}
+			continue;
+		} else if (last == '\n') {
+			return read;
 		}
 	}
 	return read;
 }
 
-
-static unsigned int read_escape(int fd, char c)
-{
-	switch (c) {
-		case 'n':
-		return fgetc(fd) == '\n';
-		break;
-		
-		case 'b':
-		return fgetc(fd) == '\b';
-		break;
-		
-		case '\\':
-		return fgetc(fd) == '\n';
-		break;
-
-		default:
-		return 0;
-	}
-	return 1;
-}
-
-
-static unsigned int read_number(int fd, va_list ap, int c)
+static unsigned int read_fmt(int fd, va_list ap, int c)
 {
 	int read = 0;
+	char * ptr;
 
 	switch (c) {
 		case 's':
-		read = read_str(fd, va_arg(ap, char **));
+		read = read_str(fd, va_arg(ap, char *));
 		break;
 
 		case 'd':
-		read = read_base(fd, va_arg(ap, int *), 10);
+		read = read_base_10(fd, va_arg(ap, int *));
 		break;
 
-		case 'o':
-		read = read_base(fd, va_arg(ap, int *), 8);
-		break;
-
-		case 'x':
-		read = read_base(fd, va_arg(ap, int *), 16);
+		case 'c':
+		read = 1;
+		ptr = va_arg(ap, char *);
+		(*ptr) = fgetc(fd);
+		fputc(STDERR, *ptr);
 		break;
 
 		default:
@@ -117,27 +84,36 @@ static unsigned int read_number(int fd, va_list ap, int c)
 	return read;
 }
 
-static int read_str(int fd, char ** str)
+static int read_str(int fd, char * str)
 {
 	char c;
 	int idx = 0;
-	while ((c = fgetc(fd)) != ' ' && idx < SCANF_MAX_STR_BUFFER) {
-		(*str)[idx++] = c;
+	while (idx < SCANF_MAX_STR_BUFFER - 1) {
+		c = fgetc(fd);
+		fputc(STDERR, c);
+		if (c == ' ' || c == '\n') {
+			break;
+		}
+		str[idx++] = c;
 	}
-
+	str[idx] = 0;
 	return idx > 0;
 }
 
-static int read_base(int fd, int * n, int base)
+static int read_base_10(int fd, int * n)
 {
 	char c;
 	int idx = 0;
-	int code;
-	while ((c = fgetc(fd)) != ' ' && idx < SCANF_MAX_STR_BUFFER) {
-		code = c - (base > 10 ? (c < 'A' ? '0' : 'A') : '0');
-		if (code > base || code < 0) return 0;
-		(*n) = (*n) * base + code;
+	while (idx < 10) {
+		c = fgetc(fd);
+		fputc(STDERR, c);
+		if (c < '0' || c > '9') {
+			break;
+		}
+		(*n) = (*n) * 10 + c - '0';
+		idx++;
 	}
-
+	putc(c);
+	fungetc(fd, c);
 	return idx > 0;
 }

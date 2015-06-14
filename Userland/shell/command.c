@@ -281,11 +281,10 @@ void printf_cmd(char *argv[], int argc)
 void scanf_cmd(char *argv[], int argc) 
 {
 	int n;
-	char vec[50];
-	float f;
+	char vec[SCANF_MAX_STR_BUFFER];
 	printf("Welcome to scanf user test:\n ");
 	printf("And so, the trial begins...\n");
-	printf("Please type in a number: ");
+	printf("Please type in a number: \n");
 	scanf("%d", &n);
 	printf("You typed in: %d\n\n", n);
 	reset_vect(vec);
@@ -305,9 +304,9 @@ void scanf_cmd(char *argv[], int argc)
 	scanf("%s", vec);
 	reset_vect(vec);
 	printf(" Actually your response was irrelevant, proceeding with last trial...\n ");
-	printf("Type in double format, your credit card number followed by verification code\n" );
-	scanf("%f", &f);
-	printf("\nYour fake card data was: %f\n\n", f);
+	printf("Type in string format, your credit card number followed by verification code\n" );
+	scanf("%s", vec);
+	printf("\nYour fake card data was: %s\n\n", vec);
 	reset_vect(vec);
 }
 
