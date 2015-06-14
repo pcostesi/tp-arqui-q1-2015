@@ -122,13 +122,19 @@ void halt_system(void)
 
 void print_ascii_table(char** args, int argc)
 {
-	int i = 0;
-	
-	for (i = 0; i<128; i++){
-		printf("%d:", i);
-		putc(i);
-		putc('\t');
+	int i;
+
+	for (i = 0; i < 128; i++){
+		printf("%x: %c", i, i < 32 ? ' ' : i);
+
+		if (i % 8) {
+			printf(" \t| ");
+		} else {
+    		putc('\n');
+    	}
 	}
+
+    putc('\n');
 }
 
 
@@ -269,7 +275,7 @@ void printf_cmd(char *argv[], int argc)
 	printf("Printing an integer: %d\n", 99);
 	printf("Printing a string: %s\n", "This is a real cool string!");
 	printf("Printing in uppercase hexadecimal notation: %x\n", 0x55fa);
-	printf("Printing a single char: %c\n", 'c');
+	printf("Printing a single char: %c\n", 'z');
 }
 
 void scanf_cmd(char *argv[], int argc) 
