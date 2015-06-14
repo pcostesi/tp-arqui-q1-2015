@@ -25,4 +25,5 @@ void help_error_print();
 void help(char**, int); 
 void halt_system(void);
 void commands(char** args, int argc);
+void print_ascii_table(char** args, int argc);
 #endif
