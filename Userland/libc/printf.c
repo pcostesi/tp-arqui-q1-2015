@@ -70,7 +70,11 @@ int vfprintf(int fd, char * fmt, va_list ap)
 	int written = 0;
 
 	while ((c = *ptr++) != (char) 0) {
-            if (in_fmt) {
+			if (in_fmt && c == '%') {
+				written++;
+				in_fmt = 0;
+				fputc(fd, c);
+			} else if (in_fmt) {
                 written += print_number(fd, ap, c);
                 in_fmt = 0;
             } else if (c == '%') {

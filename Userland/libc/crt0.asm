@@ -1,7 +1,6 @@
 SECTION .text
 
 EXTERN main
-EXTERN __init_bss
 
 ; see https://msdn.microsoft.com/en-us/library/6t169e9c.aspx
 %macro PUSHALL 0
@@ -54,23 +53,6 @@ GLOBAL _start
 _start:
     ENTER
     PUSHALL
-    call	_bss
     call 	main
     POPALL
     LEAVE
-
- _bss:
-    ; we do some init here but we dont want to clobber the call registers
-    push 	RDI
-    push 	RSI
-    push 	RDX
-    push 	RCX
-    push 	R8
-    push 	R9
-    call 	__init_bss
-    pop 	R9
-    pop 	R8
-    pop 	RCX
-    pop 	RDX
-    pop 	RSI
-    pop 	RDI

@@ -22,6 +22,6 @@ SECTIONS
 		*(.bss*)
 		*(EXCLUDE_FILE (*.o) COMMON)
 	}
-	. = ALIGN(0x4000);
+	. = ALIGN(0x1000);
 	endOfKernel = .;
 }

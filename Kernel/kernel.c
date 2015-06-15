@@ -87,7 +87,6 @@ int main()
 
 	kbrd_install();
 	vid_clr();
-	
 
 	/* these are the PUBLICLY ACCESSIBLE modules */
 	void * moduleAddresses[] = {
@@ -100,6 +99,6 @@ int main()
 	uint8_t modules = sizeof(moduleNames) / sizeof(char *);
     ((EntryPoint)shellModuleAddress)(modules, moduleNames, moduleAddresses);
 
-    vid_print("\nHalting", 8);
+    syscall_halt();
 	return 0;
 }
