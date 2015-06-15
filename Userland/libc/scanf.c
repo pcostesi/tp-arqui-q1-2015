@@ -113,7 +113,6 @@ static int read_base_10(int fd, int * n)
 		(*n) = (*n) * 10 + c - '0';
 		idx++;
 	}
-	putc(c);
 	fungetc(fd, c);
 	return idx > 0;
 }

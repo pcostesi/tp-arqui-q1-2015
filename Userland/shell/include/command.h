@@ -23,7 +23,7 @@ void scanf_cmd(char**, int);
 void reset_vect(char vec[]);
 void help_error_print();
 void help(char**, int); 
-void halt_system(void);
+void halt_system(char** args, int argc);
 void commands(char** args, int argc);
 void print_ascii_table(char** args, int argc);
 #endif

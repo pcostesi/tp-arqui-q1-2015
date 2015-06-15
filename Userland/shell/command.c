@@ -115,7 +115,7 @@ void set_time(char** args, int argc)
 
 }
  
-void halt_system(void)
+void halt_system(char** args, int argc)
 {
 	halt();
 }

@@ -6,17 +6,17 @@ SECTIONS
 	{
 		text = .;
 		*(.text*)
-		. = ALIGN(0x1000);
+		. = ALIGN(0x4000);
 		rodata = .;
 		*(.rodata*)
 	}
-	.data ALIGN(0x1000) : AT(ADDR(.data))
+	.data ALIGN(0x4000) : AT(ADDR(.data))
 	{
 		data = .;
 		*(.data*)
 		endOfKernelBinary = .;
 	}
-	.bss ALIGN(0x1000) : AT(ADDR(.bss))
+	.bss ALIGN(0x4000) : AT(ADDR(.bss))
 	{
 		bss = .;
 		*(.bss*)
