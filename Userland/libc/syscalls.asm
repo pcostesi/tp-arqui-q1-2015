@@ -31,6 +31,7 @@ SECTION .text
 
 %macro LEAVE 0
     POPALL
+    mov     rsp, rbp
     pop     rbp
     ret
 %endmacro

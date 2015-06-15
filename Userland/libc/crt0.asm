@@ -43,6 +43,7 @@ EXTERN main
 %endmacro
 
 %macro LEAVE 0
+    mov     rsp, rbp
     pop     rbp
     ret
 %endmacro
