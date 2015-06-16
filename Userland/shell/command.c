@@ -341,6 +341,7 @@ void scanf_cmd(char *argv[], int argc)
 {
 	int n;
 	char vec[SCANF_MAX_STR_BUFFER];
+
 	printf("Welcome to scanf user test:\n ");
 	printf("And so, the trial begins...\n");
 	printf("Please type in a number: \n");

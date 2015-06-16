@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <libc.h>
+#include <stdint.h>
 
-static unsigned char unchar = '\0';
+static int unchar = -1;
 
 void fungetc(int fd, char c) {
 	if (fd == STDIN) {
@@ -16,15 +17,16 @@ void ungetc(char c) {
 int fgetc(int fd)
 {
 	char c;
-	if (unchar != '\0') {
-		c = unchar;
-		unchar = '\0';
+	int has_data = 0;
+	if (unchar != -1) {
+		c = (char) unchar;
+		unchar = -1;
 		return c;
 	}
 
 	do {
-		read(fd, &c, 1);
-	} while (c == 0);
+		has_data = read(fd, &c, 1) != -1;
+	} while (!has_data);
 	return c;
 }
 
@@ -35,13 +37,15 @@ int getc(void)
 
 int fgetsn(int fd, char * c, int n)
 {
-	if (unchar != '\0' && n > 1) {
-		(*c) = unchar;
-		n--;
+	int has_read = 0;
+	if (unchar != -1 && n > 1) {
+		(*c) = (char) unchar;
 		c++;
-		unchar = '\0';
+		has_read++;
+		unchar = -1;
 	}
-	return read(fd, c, n);
+	unchar = -1;
+	return has_read + read(fd, c, n - has_read);
 }
 
 int fgets(int fd, char * c, unsigned int n)

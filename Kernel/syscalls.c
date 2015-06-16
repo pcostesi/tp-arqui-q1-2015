@@ -67,7 +67,7 @@ int syscall_write(unsigned int fd, char *str, unsigned int size)
 int syscall_read(unsigned int fd, char * buf, unsigned int size)
 {
 	int read = -1;
-	enum KEYCODE keycode;
+	enum KEYCODE keycode = KEY_UNKNOWN;
 	char code;
 
 	/* this function will return when the buffer gets consumed! */
