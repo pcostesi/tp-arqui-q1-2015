@@ -26,4 +26,6 @@ void help(char**, int);
 void halt_system(char** args, int argc);
 void commands(char** args, int argc);
 void print_ascii_table(char** args, int argc);
+void setcolor(char** args, int argc);
+
 #endif
