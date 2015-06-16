@@ -86,18 +86,20 @@ int syscall_read(unsigned int fd, char * buf, unsigned int size)
 
 int syscall_ioctl(unsigned int fd, unsigned long request, void * params)
 {
-	int exitno = 0;
-	if (fd == STDOUT || fd == STDERR || fd == STDRAW) {
+	int exitno = -1;
+	if (fd == STDOUT || fd == STDERR || fd == STDRAW || fd == STDIN) {
 		char high = ((uint64_t) params >> 8) & 0xFF;
 		char low = ((uint64_t) params) & 0xFF;
 			
 		switch (request) {
 			case 0: /* move cursor */
 			vid_cursor(high, low);
+			return 0;
 			break;
 
 			case 1: /* clear screen */
 			vid_clr();
+			return 0;
 			break;
 
 			case 2: /* change color */
@@ -106,10 +108,12 @@ int syscall_ioctl(unsigned int fd, unsigned long request, void * params)
 				colors[fd - 1] = high;
 				colors[fd] = low;
 			}
+			return 0;
 			break;
 
 			case 3: /* inactive */
 			screensaver_delay = (unsigned int) params;
+			return screensaver_delay;
 			break;
 		}
 	}
