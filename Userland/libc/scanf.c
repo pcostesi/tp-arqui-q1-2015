@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdint.h>
 
-static unsigned int read_fmt(int fd, va_list ap, int c);
+static unsigned int read_fmt(int fd, int c, va_list ap);
 
 static int read_str(int fd, char * str);
 static int read_base_10(int fd, int * n);
@@ -39,25 +40,25 @@ int vfscanf(int fd, char * fmt, va_list ap)
 	int last;
 
 	while ((c = *ptr++) != (char) 0) {
-		while ((last = fgetc(fd)) == ' ');
 		if (in_fmt) {
-			fungetc(fd, last);
-			if (!read_fmt(fd, ap, c)) {
+			if (!read_fmt(fd, c, ap)) {
 				return read;
 			}
 			read++;
 			in_fmt = 0;
 		} else if (c == '%') {
-			in_fmt = c;
+			in_fmt = 1;
 			continue;
 		} else if (last == '\n') {
 			return read;
 		}
+
+		while ((last = fgetc(fd)) == ' ');
 	}
 	return read;
 }
 
-static unsigned int read_fmt(int fd, va_list ap, int c)
+static unsigned int read_fmt(int fd, int c, va_list ap)
 {
 	int read = 0;
 	char * ptr;
@@ -75,12 +76,13 @@ static unsigned int read_fmt(int fd, va_list ap, int c)
 		read = 1;
 		ptr = va_arg(ap, char *);
 		(*ptr) = fgetc(fd);
-		fputc(STDERR, *ptr);
+		fputc(STDOUT, *ptr);
 		break;
 
 		default:
 		return read;
 	}
+	fputc(STDOUT, '\n');
 	return read;
 }
 
@@ -89,11 +91,11 @@ static int read_str(int fd, char * str)
 	char c;
 	int idx = 0;
 	while (idx < SCANF_MAX_STR_BUFFER - 1) {
-		c = fgetc(fd);
-		fputc(STDERR, c);
+		c = (char) fgetc(fd);
 		if (c == ' ' || c == '\n') {
 			break;
 		}
+		fputc(STDOUT, c);
 		str[idx++] = c;
 	}
 	str[idx] = 0;
@@ -104,16 +106,19 @@ static int read_base_10(int fd, int * n)
 {
 	char c;
 	int idx = 0;
-	while (idx < 10) {
-		c = fgetc(fd);
-		fputc(STDERR, c);
-		if (c < '0' || c > '9') {
+	uint64_t asd = 0;
+	while (idx < 9) {
+		c = (char) fgetc(fd);
+		fputc(STDOUT, c);
+		if (c < '0' || c > '9' || asd >= (UINT64_MAX / 9)) {
+			fungetc(fd, c);
 			break;
+		} else {
+			asd = asd * 10 + c - '0';
+			idx++;	
 		}
-		(*n) = (*n) * 10 + c - '0';
-		idx++;
 	}
-	fungetc(fd, c);
+	*n = (int) asd;
 	return idx > 0;
 }
 
