@@ -4,6 +4,8 @@
 
 #define INVALID_DATE "Invalid date inserted, please respect dd/mm/yy format & insert a valid date.\n"
 #define INVALID_TIME "No arguments were sent to command settime format musut be ss:mm:hh \n"
+#define INVALID_SCREEN_SAVER_TIME "Invalid time delay was introduced for screen saver, please use following format:\n \"ss:mm:hh\". Note timer cannot exceed 24hs nor be shorter than 5 seconds\n"
+
 
 void echo(char**, int);
 void clear(char**, int);
@@ -27,5 +29,5 @@ void halt_system(char** args, int argc);
 void commands(char** args, int argc);
 void print_ascii_table(char** args, int argc);
 void setcolor(char** args, int argc);
-
+void screen_saver_delay(char** args, int argc);
 #endif

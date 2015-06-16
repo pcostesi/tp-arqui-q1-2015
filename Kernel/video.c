@@ -56,7 +56,7 @@ void vid_print(const char * str, unsigned int n)
 	}
 }
 
-void vid_clr() {
+void vid_clr(void) {
 	int i;
 	_vid_set_cursor(0, 0);
 	for (i = 0; i < COLS * ROWS; i++) {

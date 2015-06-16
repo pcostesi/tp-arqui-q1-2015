@@ -11,6 +11,7 @@
 #define STDRAW 3
 
 extern void _halt(void);
+extern unsigned int screensaver_delay;
 
 static char video_dormant = 0;
 static enum VID_COLOR colors[] = {LIGHT_GRAY, BLACK, RED, BLACK};
@@ -105,6 +106,10 @@ int syscall_ioctl(unsigned int fd, unsigned long request, void * params)
 				colors[fd - 1] = high;
 				colors[fd] = low;
 			}
+			break;
+
+			case 3: /* inactive */
+			screensaver_delay = (unsigned int) params;
 			break;
 		}
 	}
