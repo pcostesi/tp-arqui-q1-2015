@@ -194,7 +194,8 @@ void screen_saver_delay(char** args, int argc)
 		return;
 	}
 	//set screensaver delay.
-	ioctl(STDIN, IOCTL_INACTIVE, (void *) delay);
+	int result = ioctl(STDIN, IOCTL_INACTIVE, (void *) delay);
+	printf("set to %d seconds.\n", result);
 	return;
 }
 
