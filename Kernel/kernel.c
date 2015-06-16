@@ -9,8 +9,6 @@
 #include <rtc-driver.h>
 #include <syscalls.h>
 
-#define SCRSVR_SEC 10
-
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -19,6 +17,7 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x4000;
+unsigned int screensaver_delay = 10;
 
 static const void * shellModuleAddress = (void*)0x400000;
 
@@ -62,7 +61,7 @@ void wake_up(void)
 
 void pit_irq(int irq)
 {
-	if (timer < SCRSVR_SEC * (1000 / 55)) {
+	if (timer < screensaver_delay * (1000 / 55)) {
 		timer++;
 	} else {
 		syscall_pause();

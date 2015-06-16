@@ -176,7 +176,27 @@ void setcolor(char** args, int argc)
 }
 
 
-
+void screen_saver_delay(char** args, int argc)
+{
+	int seconds, minutes, hours;
+	uint64_t delay;
+	if(argc < 1){
+		printf(INVALID_SCREEN_SAVER_TIME);
+		return;
+	}	
+	if(!parse_time(args[0], &seconds, &minutes, &hours)){
+		printf(INVALID_SCREEN_SAVER_TIME);
+		return;
+	}
+	delay = seconds + minutes * 60 + hours * 3600;
+	if(delay > 86400 || delay < 5 ){
+		printf(INVALID_SCREEN_SAVER_TIME);
+		return;
+	}
+	//set screensaver delay.
+	ioctl(STDIN, IOCTL_INACTIVE, (void *) delay);
+	return;
+}
 
 
 

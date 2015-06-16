@@ -28,6 +28,7 @@ extern int ioctl(unsigned int fd, unsigned long request, void * params);
 #define IOCTL_MOVE 0
 #define IOCTL_CLR 1
 #define IOCTL_SET_COLOR 2
+#define IOCTL_INACTIVE 3
 #define _IOCTL_HIGH_LOW(high, low)	((uint64_t)(((high) & 0xFF) << 8) | (uint64_t)((low) & 0xFF))
 
 #define IOCTL_CURSOR(row, pos)	((void *) _IOCTL_HIGH_LOW((row), (pos)))
