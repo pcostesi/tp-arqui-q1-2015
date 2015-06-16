@@ -61,7 +61,7 @@ void vid_clr() {
 	_vid_set_cursor(0, 0);
 	for (i = 0; i < COLS * ROWS; i++) {
 		*_vid_cursor++ = (char) ' ';
-		*_vid_cursor++ = (char) 0;
+		*_vid_cursor++ = (char) _vid_fmt;
 	}
 	_vid_set_cursor(0, 0);
 }
@@ -169,8 +169,9 @@ inline static void vid_scroll(void)
 		_vid_copy_row(row + 1, row);
 	}
 
-	for (col = 0; col < COLS; col++) {
-		*ptr++ = (char) 0;
+	for (col = 0; col < COLS / 2; col++) {
+		*ptr++ = (char) ' ';
+		*ptr++ = (char) _vid_fmt;
 	}
 }
 

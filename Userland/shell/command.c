@@ -138,6 +138,44 @@ void print_ascii_table(char** args, int argc)
 }
 
 
+void setcolor(char** args, int argc)
+{
+	int fore, back, fd;
+	if (argc < 2 || argc > 3) {
+		printf("usage: setcolor foreground background [stderr]\n");
+		printf("\nColors are:\n");
+
+		printf("\tdarker       | lighter\n");
+		printf("\tblack:     0 | light gray:   8\n");
+		printf("\tblue:      1 | celurean:     9\n");
+		printf("\tgreen:     2 | light green: 10\n");
+		printf("\tcyan:      3 | light cyan:  11\n");
+		printf("\tred:       4 | light red:   12\n");
+		printf("\tmagenta 1: 5 | magenta 2:   13\n");
+		printf("\tbrown:     6 | yellow:      14\n");
+		printf("\tgray 1:    7 | white:       15\n");
+		printf("\nnote: you might not choose two of the same.");
+		return;
+	}
+
+	fore = atoi(args[0]);
+	back = atoi(args[1]);
+
+	if (fore == back) {
+		printf("Aaaand you chose two of the same...\n Nope.\n");
+		return;
+	}
+
+	if (fore >= 16 || back >= 16 || fore < 0 || back < 0) {
+		printf("Invalid parameter: %d, %d\n", fore, back);
+		return;
+	}
+
+	fd = (argc == 3 && strcmp(args[3], "stderr")) ? STDERR : STDOUT;
+	ioctl(fd, IOCTL_SET_COLOR, IOCTL_COLOR(fore, back));
+}
+
+
 
 
 

@@ -116,3 +116,18 @@ static int read_base_10(int fd, int * n)
 	fungetc(fd, c);
 	return idx > 0;
 }
+
+
+
+int atoi(char * str)
+{
+	char c;
+	int i = 0;
+	while ((c = *str++) != 0) {
+		if (c < '0' || c > '9') {
+			break;
+		}
+		i = i * 10 + c - '0';
+	}
+	return i;
+}
