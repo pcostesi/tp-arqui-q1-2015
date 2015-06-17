@@ -1,9 +1,11 @@
 #include <syscalls.h>
 #include <video.h>
+#include <sound.h>
 #include <time.h>
 #include <interrupts.h>
 #include <keyboard.h>
 #include <rtc-driver.h>
+#include <screensaver.h>
 
 #define STDIN  0
 #define STDOUT 1
@@ -11,7 +13,6 @@
 #define STDRAW 3
 
 extern void _halt(void);
-extern unsigned int screensaver_delay;
 
 static char video_dormant = 0;
 static enum VID_COLOR colors[] = {LIGHT_GRAY, BLACK, RED, BLACK};
@@ -19,7 +20,8 @@ static enum VID_COLOR colors[] = {LIGHT_GRAY, BLACK, RED, BLACK};
 void syscall_halt(void)
 {
 	vid_clr();
-	vid_print("\n\tHalted X(", 11);
+	vid_cursor(12, 34);
+	vid_print("Halted X'(", 11);
 	_halt();
 }
 
@@ -41,10 +43,6 @@ void syscall_wake(void)
 
 int syscall_write(unsigned int fd, char *str, unsigned int size)
 {
-	if (video_dormant) {
-		syscall_wake();
-	};
-
 	switch (fd) {
 		case STDOUT:
 		vid_color(colors[0], colors[1]);
@@ -112,8 +110,8 @@ int syscall_ioctl(unsigned int fd, unsigned long request, void * params)
 			break;
 
 			case 3: /* inactive */
-			screensaver_delay = (unsigned int) params;
-			return screensaver_delay;
+			scrsvr_set_delay((unsigned int) params);
+			return (unsigned int) params;
 			break;
 		}
 	}
@@ -145,10 +143,8 @@ uint64_t int80h(uint64_t sysno, uint64_t RDI, uint64_t RSI, uint64_t RDX, uint64
 		syscall_halt();
 		break;
 
-		case 42: /* sys_towel */
-		while (1) {
-			syscall_write(1, "42 ", 3);
-		}
+		case 42: /* sys_beep */
+		beep();
 		break;
 
 		case 200:

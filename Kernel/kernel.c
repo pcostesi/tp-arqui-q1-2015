@@ -4,10 +4,12 @@
 #include <moduleLoader.h>
 #include <naiveConsole.h>
 #include <video.h>
+#include <sound.h>
 #include <interrupts.h>
 #include <keyboard.h>
 #include <rtc-driver.h>
 #include <syscalls.h>
+#include <screensaver.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -17,7 +19,6 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x4000;
-unsigned int screensaver_delay = 10;
 
 static const void * shellModuleAddress = (void*)0x400000;
 
@@ -61,10 +62,14 @@ void wake_up(void)
 
 void pit_irq(int irq)
 {
-	if (timer < screensaver_delay * (1000 / 55)) {
-		timer++;
-	} else {
+	tick_sound();
+	static unsigned int tick = 0;
+	if (scrsvr_should_show(timer)) {
 		syscall_pause();
+		scrsvr_tick(tick++);
+	} else {
+		timer++;
+		tick = 0;
 	}
 }
 

@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <libc.h>
 #include <command.h>
 
 
@@ -56,10 +57,13 @@ void update_shell()
 			putc('\b');
 			curr_pos--;
 			shell_buffer[curr_pos] = '\0';
+		} else {
+			beep();
 		}
 
 	} else if(curr_pos >= SHELL_BUFFER_SIZE-2) {
 		//sound beep
+		beep();
 		return;
 
 	} else {
