@@ -22,7 +22,7 @@ extern void pause(void);
 extern int read(unsigned int fd, char * str, unsigned int size);
 extern void halt(void);
 extern void shutdown(void);
-extern void towel(void);
+extern void beep(void);
 extern int ioctl(unsigned int fd, unsigned long request, void * params);
 
 #define IOCTL_MOVE 0
