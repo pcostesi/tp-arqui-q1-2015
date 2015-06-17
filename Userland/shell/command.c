@@ -76,11 +76,11 @@ void set_date(char** args, int argc)
 
 	gettime(&time_struct);
 	if(argc <1){
-		printf(INVALID_DATE);
+		fprintf(STDERR, INVALID_DATE);
 		return;
 	}
 	if(!parse_date(args[0], &days, &months, &years)){
-		printf(INVALID_DATE);
+		fprintf(STDERR, INVALID_DATE);
 		return;
 
 	}
@@ -98,11 +98,11 @@ void set_time(char** args, int argc)
 
 	gettime(&time_struct);
 	if(argc < 1){
-		printf(INVALID_TIME);
+		fprintf(STDERR, INVALID_TIME);
 		return;
 	}	
 	if(!parse_time(args[0], &seconds, &minutes, &hours)){
-		printf(INVALID_TIME);
+		fprintf(STDERR, INVALID_TIME);
 		return;
 	}
 
@@ -154,7 +154,7 @@ void setcolor(char** args, int argc)
 		printf("\tmagenta 1: 5 | magenta 2:   13\n");
 		printf("\tbrown:     6 | yellow:      14\n");
 		printf("\tgray 1:    7 | white:       15\n");
-		printf("\nnote: you might not choose two of the same.");
+		printf("\nnote: you might not choose two of the same.\n");
 		return;
 	}
 
@@ -162,17 +162,18 @@ void setcolor(char** args, int argc)
 	back = atoi(args[1]);
 
 	if (fore == back) {
-		printf("Aaaand you chose two of the same...\n Nope.\n");
+		fprintf(STDERR, "Aaaand you chose two of the same...\n Nope.\n");
 		return;
 	}
 
 	if (fore >= 16 || back >= 16 || fore < 0 || back < 0) {
-		printf("Invalid parameter: %d, %d\n", fore, back);
+		fprintf(STDERR, "Invalid parameter: %d, %d\n", fore, back);
 		return;
 	}
 
-	fd = (argc == 3 && strcmp(args[3], "stderr")) ? STDERR : STDOUT;
+	fd = (argc == 3 && strcmp(args[2], "stderr")) ? STDERR : STDOUT;
 	ioctl(fd, IOCTL_SET_COLOR, IOCTL_COLOR(fore, back));
+	clear(args, argc);
 }
 
 
@@ -181,16 +182,16 @@ void screen_saver_delay(char** args, int argc)
 	int seconds, minutes, hours;
 	uint64_t delay;
 	if(argc < 1){
-		printf(INVALID_SCREEN_SAVER_TIME);
+		fprintf(STDERR, INVALID_SCREEN_SAVER_TIME);
 		return;
 	}	
 	if(!parse_time(args[0], &seconds, &minutes, &hours)){
-		printf(INVALID_SCREEN_SAVER_TIME);
+		fprintf(STDERR, INVALID_SCREEN_SAVER_TIME);
 		return;
 	}
 	delay = seconds + minutes * 60 + hours * 3600;
 	if(delay > 86400 || delay < 5 ){
-		printf(INVALID_SCREEN_SAVER_TIME);
+		fprintf(STDERR, INVALID_SCREEN_SAVER_TIME);
 		return;
 	}
 	//set screensaver delay.

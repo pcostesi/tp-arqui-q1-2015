@@ -31,7 +31,7 @@ void print_shell_text()
 
 void print_shell_error()
 {
-	printf("We are sorry, \"%s\" command does not exist. \nFor full list of commands please type: \"commands\"\n", shell_buffer);
+	fprintf(STDERR, "We are sorry, \"%s\" command does not exist. \nFor full list of commands please type: \"commands\"\n", shell_buffer);
 }
 
 void update_shell()
