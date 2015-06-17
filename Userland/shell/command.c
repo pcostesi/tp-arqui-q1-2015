@@ -140,9 +140,9 @@ void print_ascii_table(char** args, int argc)
 
 void setcolor(char** args, int argc)
 {
-	int fore, back, fd;
-	if (argc < 2 || argc > 3) {
-		printf("usage: setcolor foreground background [stderr]\n");
+	int fore, back;
+	if (argc != 2) {
+		printf("usage: setcolor foreground background\n");
 		printf("\nColors are:\n");
 
 		printf("\tdarker       | lighter\n");
@@ -171,8 +171,7 @@ void setcolor(char** args, int argc)
 		return;
 	}
 
-	fd = (argc == 3 && strcmp(args[2], "stderr")) ? STDERR : STDOUT;
-	ioctl(fd, IOCTL_SET_COLOR, IOCTL_COLOR(fore, back));
+	ioctl(STDOUT, IOCTL_SET_COLOR, IOCTL_COLOR(fore, back));
 	clear(args, argc);
 }
 
